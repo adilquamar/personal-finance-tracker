@@ -1,5 +1,4 @@
 import {
-  LandingHeader,
   LandingFooter,
   HeroSection,
   FeaturesSection,
@@ -8,8 +7,7 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <LandingHeader />
+    <div className="min-h-screen bg-gray-50 pt-16">
       
       <HeroSection />
       

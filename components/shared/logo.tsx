@@ -43,7 +43,7 @@ export function Logo({
   )
 
   if (href) {
-    return <Link href={href}>{content}</Link>
+    return <Link href={href} className="inline-flex w-fit">{content}</Link>
   }
 
   return content

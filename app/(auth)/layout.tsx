@@ -1,4 +1,3 @@
-import { Logo } from "@/components/shared/logo"
 import "./auth.css"
 
 export default function AuthLayout({
@@ -7,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pt-16">
       {/* Gradient Background */}
       <div className="auth-gradient-bg fixed inset-0 -z-10" />
       <div className="auth-base-layer fixed inset-0 -z-10 bg-gray-50" />
@@ -18,11 +17,6 @@ export default function AuthLayout({
         <div className="auth-blob-pink absolute top-1/2 -left-40 w-[500px] h-[500px] rounded-full opacity-25" />
         <div className="auth-blob-cyan absolute -bottom-40 right-1/4 w-[700px] h-[700px] rounded-full opacity-20" />
       </div>
-
-      {/* Header */}
-      <header className="relative z-10 py-6 px-6">
-        <Logo size="md" href="/" />
-      </header>
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-6 py-12">

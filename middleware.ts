@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 // Routes that don't require authentication
-const publicRoutes = ['/', '/login', '/signup', '/auth/callback', '/auth/confirm']
+const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/auth/callback', '/auth/confirm']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
