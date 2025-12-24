@@ -1,13 +1,23 @@
-export default function Home() {
+import {
+  LandingHeader,
+  LandingFooter,
+  HeroSection,
+  FeaturesSection,
+  CTASection,
+} from "@/components/landing"
+
+export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Finance Tracker</h1>
-        <p className="text-muted-foreground">
-          Project setup complete. Ready for Epic 2!
-        </p>
-      </div>
-    </main>
+    <div className="min-h-screen bg-gray-50">
+      <LandingHeader />
+      
+      <HeroSection />
+      
+      <FeaturesSection />
+      
+      <CTASection />
+      
+      <LandingFooter />
+    </div>
   )
 }
-

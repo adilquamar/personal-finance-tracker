@@ -2,11 +2,14 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+})
 
 export const metadata: Metadata = {
-  title: "Finance Tracker",
-  description: "Personal finance tracking application",
+  title: "FinanceTracker | Personal Finance Tracking App",
+  description: "Track your expenses, view analytics, and get AI-powered insights to manage your personal finances.",
 }
 
 export default function RootLayout({
@@ -16,8 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
     </html>
   )
 }
-
