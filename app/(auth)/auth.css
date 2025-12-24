@@ -1,0 +1,46 @@
+/* Auth Layout Styles */
+
+/* Main gradient background overlay */
+.auth-gradient-bg {
+  background: linear-gradient(
+    135deg,
+    #a855f7 0%,
+    #6366f1 20%,
+    #38bdf8 40%,
+    #f0abfc 60%,
+    #fb7185 80%,
+    #fbbf24 100%
+  );
+  opacity: 0.15;
+}
+
+/* Base layer for proper blending */
+.auth-base-layer {
+  mix-blend-mode: normal;
+}
+
+/* Decorative gradient shapes */
+.auth-blob-purple {
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.4) 0%,
+    transparent 70%
+  );
+}
+
+.auth-blob-pink {
+  background: radial-gradient(
+    circle,
+    rgba(236, 72, 153, 0.4) 0%,
+    transparent 70%
+  );
+}
+
+.auth-blob-cyan {
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.4) 0%,
+    transparent 70%
+  );
+}
+
