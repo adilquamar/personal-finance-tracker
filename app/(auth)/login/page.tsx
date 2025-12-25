@@ -5,22 +5,22 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth"
-import { AuthDivider, SocialAuthButtons, PasswordInput } from "@/components/auth"
+import { signIn, signInWithOAuth } from "@/app/actions/auth"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+  AuthDivider,
+  SocialAuthButtons,
+  AuthEmailField,
+  AuthPasswordField,
+  AuthSubmitButton,
+} from "@/components/auth"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Form } from "@/components/ui/form"
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const form = useForm<LoginFormData>({
@@ -36,25 +36,41 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      // TODO: Implement actual sign-in with Supabase
-      console.log("Login attempt:", data)
+      const result = await signIn(data)
       
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      
-      // Redirect to dashboard on success
-      router.push("/dashboard")
-    } catch (err) {
-      setError("Invalid email or password. Please try again.")
+      if (result.success) {
+        router.push("/dashboard")
+        router.refresh()
+      } else {
+        setError(result.error)
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
-    // TODO: Implement Google OAuth with Supabase
-    console.log("Google sign-in clicked")
+    setIsOAuthLoading(true)
+    setError(null)
+
+    try {
+      const result = await signInWithOAuth("google")
+      
+      if ("url" in result) {
+        window.location.href = result.url
+      } else {
+        setError(result.error)
+        setIsOAuthLoading(false)
+      }
+    } catch {
+      setError("Failed to sign in with Google. Please try again.")
+      setIsOAuthLoading(false)
+    }
   }
+
+  const isDisabled = isLoading || isOAuthLoading
 
   return (
     <div className="w-full max-w-md">
@@ -70,100 +86,30 @@ export default function LoginPage() {
         {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email Field */}
-            <FormField
+            <AuthEmailField
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Email
-                  </FormLabel>
-                  <FormControl>
-                    <input
-                      type="email"
-                      autoComplete="email"
-                      disabled={isLoading}
-                      {...field}
-                      className={cn(
-                        "flex h-12 w-full rounded-lg border bg-white px-4 py-3 text-sm",
-                        "placeholder:text-gray-400",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:border-indigo-300",
-                        "disabled:cursor-not-allowed disabled:opacity-50",
-                        "transition-all duration-150",
-                        form.formState.errors.email
-                          ? "border-red-300 focus-visible:ring-red-200 focus-visible:border-red-300"
-                          : "border-gray-200"
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500" />
-                </FormItem>
-              )}
+              disabled={isDisabled}
             />
 
-            {/* Password Field */}
-            <FormField
+            <AuthPasswordField
               control={form.control}
               name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      Password
-                    </FormLabel>
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm text-indigo-500 hover:text-indigo-600 transition-colors"
-                    >
-                      Forgot your password?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <PasswordInput
-                      autoComplete="current-password"
-                      disabled={isLoading}
-                      {...field}
-                      className={cn(
-                        form.formState.errors.password
-                          ? "border-red-300 focus-visible:ring-red-200 focus-visible:border-red-300"
-                          : ""
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500" />
-                </FormItem>
-              )}
+              disabled={isDisabled}
+              showForgotLink
+              autoComplete="current-password"
             />
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={cn(
-                "relative w-full h-12 px-4",
-                "bg-indigo-400 hover:bg-indigo-500 text-white font-medium text-sm rounded-lg",
-                "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2",
-                "disabled:opacity-70 disabled:cursor-not-allowed",
-                "transition-all duration-150"
-              )}
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Signing in...
-                </span>
-              ) : (
-                "Sign in"
-              )}
-            </button>
+            <AuthSubmitButton isLoading={isLoading} disabled={isDisabled} loadingText="Signing in...">
+              Sign in
+            </AuthSubmitButton>
           </form>
         </Form>
 
@@ -174,7 +120,7 @@ export default function LoginPage() {
         <SocialAuthButtons
           mode="signin"
           onGoogleClick={handleGoogleSignIn}
-          disabled={isLoading}
+          disabled={isDisabled}
         />
 
         {/* Sign Up Link */}
@@ -193,4 +139,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

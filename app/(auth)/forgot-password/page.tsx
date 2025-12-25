@@ -4,22 +4,19 @@ import { useState } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, ArrowLeft, Mail } from "lucide-react"
+import { ArrowLeft, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/validations/auth"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { resetPassword } from "@/app/actions/auth"
+import { AuthEmailField, AuthSubmitButton } from "@/components/auth"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Form } from "@/components/ui/form"
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submittedEmail, setSubmittedEmail] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,19 +27,27 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
+    setError(null)
 
     try {
-      // TODO: Implement actual password reset with Supabase
-      console.log("Password reset requested for:", data.email)
+      const result = await resetPassword(data.email)
       
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      
-      setSubmittedEmail(data.email)
-      setIsSubmitted(true)
+      if (result.success) {
+        setSubmittedEmail(data.email)
+        setIsSubmitted(true)
+      } else {
+        setError(result.error)
+      }
+    } catch {
+      setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleResend = () => {
+    setIsSubmitted(false)
+    form.reset({ email: submittedEmail })
   }
 
   if (isSubmitted) {
@@ -62,7 +67,7 @@ export default function ForgotPasswordPage() {
               Check your email
             </h1>
             <p className="text-gray-600">
-              We sent a password reset link to
+              If an account exists with this email, you&apos;ll receive a password reset link at
             </p>
             <p className="text-gray-900 font-medium mt-1">
               {submittedEmail}
@@ -87,7 +92,7 @@ export default function ForgotPasswordPage() {
             Didn&apos;t receive the email?{" "}
             <button
               type="button"
-              onClick={() => setIsSubmitted(false)}
+              onClick={handleResend}
               className="text-indigo-500 hover:text-indigo-600 font-medium transition-colors"
             >
               Click to resend
@@ -124,63 +129,25 @@ export default function ForgotPasswordPage() {
         {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email Field */}
-            <FormField
+            <AuthEmailField
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
-                    Email
-                  </FormLabel>
-                  <FormControl>
-                    <input
-                      type="email"
-                      autoComplete="email"
-                      disabled={isLoading}
-                      {...field}
-                      className={cn(
-                        "flex h-12 w-full rounded-lg border bg-white px-4 py-3 text-sm",
-                        "placeholder:text-gray-400",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:border-indigo-300",
-                        "disabled:cursor-not-allowed disabled:opacity-50",
-                        "transition-all duration-150",
-                        form.formState.errors.email
-                          ? "border-red-300 focus-visible:ring-red-200 focus-visible:border-red-300"
-                          : "border-gray-200"
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm text-red-500" />
-                </FormItem>
-              )}
+              disabled={isLoading}
             />
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={cn(
-                "relative w-full h-12 px-4",
-                "bg-indigo-400 hover:bg-indigo-500 text-white font-medium text-sm rounded-lg",
-                "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2",
-                "disabled:opacity-70 disabled:cursor-not-allowed",
-                "transition-all duration-150"
-              )}
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Sending...
-                </span>
-              ) : (
-                "Send reset link"
-              )}
-            </button>
+            {/* Error Message */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <AuthSubmitButton isLoading={isLoading} loadingText="Sending...">
+              Send reset link
+            </AuthSubmitButton>
           </form>
         </Form>
       </div>
     </div>
   )
 }
-

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { AppHeader } from "@/components/shared"
+import { AppHeaderClient } from "@/components/shared"
+import { getSupabaseUser } from "@/lib/auth"
 import "./globals.css"
 
 const inter = Inter({ 
@@ -13,15 +14,17 @@ export const metadata: Metadata = {
   description: "Track your expenses, view analytics, and get AI-powered insights to manage your personal finances.",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await getSupabaseUser()
+
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AppHeader />
+        <AppHeaderClient user={user} />
         {children}
       </body>
     </html>
