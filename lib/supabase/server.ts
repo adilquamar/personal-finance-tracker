@@ -4,14 +4,50 @@ import type { Database } from '@/types/database'
 
 /**
  * Creates a Supabase client for use in Server Components, Server Actions, and Route Handlers.
- * This client has access to the user's session via cookies.
+ * This client has access to the user's session via cookies and respects RLS policies.
+ * 
+ * Uses the publishable API key for user-authenticated operations.
+ * @see https://supabase.com/docs/guides/api/api-keys
  */
 export async function createClient() {
   const cookieStore = await cookies()
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing sessions.
+          }
+        },
+      },
+    }
+  )
+}
+
+/**
+ * Creates an admin Supabase client that bypasses Row Level Security.
+ * Use this ONLY for admin operations that require elevated privileges.
+ * 
+ * WARNING: Never expose this client to client-side code.
+ * @see https://supabase.com/docs/guides/api/api-keys
+ */
+export async function createAdminClient() {
+  const cookieStore = await cookies()
+
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SECRET_KEY,
     {
       cookies: {
         getAll() {

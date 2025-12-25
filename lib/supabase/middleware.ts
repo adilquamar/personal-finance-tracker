@@ -12,6 +12,9 @@ type CookieToSet = {
 /**
  * Updates the Supabase auth session in middleware.
  * This ensures the session is refreshed on every request.
+ * 
+ * Uses the publishable API key for session management.
+ * @see https://supabase.com/docs/guides/api/api-keys
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -20,7 +23,7 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
