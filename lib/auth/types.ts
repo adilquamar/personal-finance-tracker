@@ -1,6 +1,7 @@
 /**
  * Result type for authentication operations.
  * Either succeeds with an optional message, or fails with an error.
+ * Note: Successful auth with immediate session uses redirect() and never returns.
  */
 export type AuthResult = {
   success: true

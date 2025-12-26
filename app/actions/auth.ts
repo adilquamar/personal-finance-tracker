@@ -14,8 +14,14 @@ export type { AuthResult, OAuthProvider } from "@/lib/auth/types"
 /**
  * Signs up a new user with email and password.
  * Stores the user's full name in user metadata.
+ * 
+ * If email confirmation is required, returns success with a message.
+ * If immediate session (email confirmation disabled), sets cookies and redirects.
+ * 
+ * @param formData - The signup form data
+ * @param redirectTo - URL to redirect to after successful sign-up (default: "/dashboard")
  */
-export async function signUp(formData: SignupFormData): Promise<AuthResult> {
+export async function signUp(formData: SignupFormData, redirectTo: string = "/dashboard"): Promise<AuthResult> {
   const validationResult = signupSchema.safeParse(formData)
   if (!validationResult.success) {
     return {
@@ -25,6 +31,7 @@ export async function signUp(formData: SignupFormData): Promise<AuthResult> {
   }
 
   const { email, password, fullName } = validationResult.data
+  let shouldRedirect = false
 
   try {
     const supabase = await createClient()
@@ -60,22 +67,35 @@ export async function signUp(formData: SignupFormData): Promise<AuthResult> {
     }
 
     // If we got a session, the user is signed in (email confirmation disabled)
+    // With @supabase/ssr@0.8.0+, cookies are automatically set via the setAll callback
     if (data.session) {
       revalidatePath("/", "layout")
-      return { success: true, message: "Account created successfully!" }
+      shouldRedirect = true
+    } else {
+      return { success: true, message: "Please check your email to verify your account." }
     }
-
-    return { success: true, message: "Please check your email to verify your account." }
   } catch (error) {
     console.error("Unexpected signup error:", error)
     return { success: false, error: getDefaultErrorMessage() }
   }
+  
+  // Redirect after cookies are set (outside try/catch because redirect throws)
+  if (shouldRedirect) {
+    redirect(redirectTo)
+  }
+  
+  return { success: true, message: "Please check your email to verify your account." }
 }
 
 /**
  * Signs in a user with email and password.
+ * On success, sets auth cookies and redirects to the specified URL.
+ * Only returns on error.
+ * 
+ * @param formData - The login form data
+ * @param redirectTo - URL to redirect to after successful sign-in (default: "/dashboard")
  */
-export async function signIn(formData: LoginFormData): Promise<AuthResult> {
+export async function signIn(formData: LoginFormData, redirectTo: string = "/dashboard"): Promise<AuthResult> {
   const validationResult = loginSchema.safeParse(formData)
   if (!validationResult.success) {
     return {
@@ -89,19 +109,27 @@ export async function signIn(formData: LoginFormData): Promise<AuthResult> {
   try {
     const supabase = await createClient()
     
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       console.error("Sign in error:", error.message)
       return { success: false, error: getAuthErrorMessage(error.message) }
     }
 
+    // Verify session was established
+    if (!data.session) {
+      console.error("Sign in succeeded but no session returned")
+      return { success: false, error: "Failed to establish session. Please try again." }
+    }
+
     revalidatePath("/", "layout")
-    return { success: true }
   } catch (error) {
     console.error("Unexpected sign in error:", error)
     return { success: false, error: getDefaultErrorMessage() }
   }
+  
+  // Redirect after cookies are set (outside try/catch because redirect throws)
+  redirect(redirectTo)
 }
 
 /**

@@ -2,9 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { isRedirectError } from "next/dist/client/components/redirect"
 import { signupSchema, type SignupFormData } from "@/lib/validations/auth"
 import { signUp, signInWithOAuth } from "@/app/actions/auth"
 import {
@@ -20,7 +20,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
 export default function SignupPage() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [isOAuthLoading, setIsOAuthLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -43,19 +42,22 @@ export default function SignupPage() {
     setSuccessMessage(null)
 
     try {
+      // signUp redirects on immediate session, returns message for email confirmation
       const result = await signUp(data)
       
       if (result.success) {
-        if (result.message?.includes("verify") || result.message?.includes("check your email")) {
+        // Email confirmation required
+        if (result.message) {
           setSuccessMessage(result.message)
-        } else {
-          router.push("/dashboard")
-          router.refresh()
         }
       } else {
         setError(result.error)
       }
-    } catch {
+    } catch (error) {
+      // Re-throw redirect errors so Next.js can handle them
+      if (isRedirectError(error)) {
+        throw error
+      }
       setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
@@ -170,3 +172,4 @@ export default function SignupPage() {
     </div>
   )
 }
+

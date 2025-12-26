@@ -21,6 +21,8 @@ export type AuthUser = {
 export async function getUser(): Promise<AuthUser | null> {
   const supabase = await createClient()
   
+  // getUser() validates the session server-side by calling Supabase Auth API
+  // This is the secure way to get the user (vs getSession which only reads local data)
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) {
@@ -54,10 +56,7 @@ export async function getUserOrThrow(): Promise<AuthUser> {
  * @returns true if authenticated, false otherwise
  */
 export async function isAuthenticated(): Promise<boolean> {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  
+  const user = await getUser()
   return !!user
 }
 
@@ -69,9 +68,7 @@ export async function isAuthenticated(): Promise<boolean> {
  */
 export async function getSupabaseUser(): Promise<User | null> {
   const supabase = await createClient()
-  
   const { data: { user } } = await supabase.auth.getUser()
-  
   return user
 }
 
@@ -87,4 +84,3 @@ function mapSupabaseUser(user: User): AuthUser {
     createdAt: user.created_at,
   }
 }
-
