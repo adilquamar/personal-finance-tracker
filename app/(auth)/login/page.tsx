@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -23,6 +23,14 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isOAuthLoading, setIsOAuthLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Show errors from OAuth callback or other redirects
+  useEffect(() => {
+    const callbackError = searchParams.get("error")
+    if (callbackError) {
+      setError(callbackError)
+    }
+  }, [searchParams])
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
