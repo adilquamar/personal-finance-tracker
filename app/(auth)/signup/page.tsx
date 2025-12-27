@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { isRedirectError } from "next/dist/client/components/redirect"
 import { signupSchema, type SignupFormData } from "@/lib/validations/auth"
-import { signUp, signInWithOAuth } from "@/app/actions/auth"
+import { signUp } from "@/app/actions/auth"
+import { useAuthForm } from "@/lib/hooks/use-auth-form"
 import {
   AuthDivider,
   SocialAuthButtons,
@@ -14,16 +13,20 @@ import {
   AuthTextField,
   AuthPasswordWithStrength,
   AuthSubmitButton,
-  AuthSuccessMessage,
 } from "@/components/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
 export default function SignupPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const {
+    isLoading,
+    error,
+    isDisabled,
+    handleGoogleAuth,
+    handleSubmit,
+  } = useAuthForm({
+    oauthErrorMessage: "Failed to sign up with Google. Please try again.",
+  })
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -36,67 +39,7 @@ export default function SignupPage() {
 
   const password = form.watch("password", "")
 
-  const onSubmit = async (data: SignupFormData) => {
-    setIsLoading(true)
-    setError(null)
-    setSuccessMessage(null)
-
-    try {
-      // signUp redirects on immediate session, returns message for email confirmation
-      const result = await signUp(data)
-      
-      if (result.success) {
-        // Email confirmation required
-        if (result.message) {
-          setSuccessMessage(result.message)
-        }
-      } else {
-        setError(result.error)
-      }
-    } catch (error) {
-      // Re-throw redirect errors so Next.js can handle them
-      if (isRedirectError(error)) {
-        throw error
-      }
-      setError("An unexpected error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGoogleSignUp = async () => {
-    setIsOAuthLoading(true)
-    setError(null)
-
-    try {
-      const result = await signInWithOAuth("google")
-      
-      if ("url" in result) {
-        window.location.href = result.url
-      } else {
-        setError(result.error)
-        setIsOAuthLoading(false)
-      }
-    } catch {
-      setError("Failed to sign up with Google. Please try again.")
-      setIsOAuthLoading(false)
-    }
-  }
-
-  const isDisabled = isLoading || isOAuthLoading
-
-  // Show success message if email confirmation is required
-  if (successMessage) {
-    return (
-      <AuthSuccessMessage
-        variant="success"
-        title="Check your email"
-        message={successMessage}
-        linkText="Back to sign in"
-        linkHref="/login"
-      />
-    )
-  }
+  const onSubmit = handleSubmit<SignupFormData>(signUp)
 
   return (
     <div className="w-full max-w-md">
@@ -112,7 +55,7 @@ export default function SignupPage() {
         {/* Social Auth - First on signup */}
         <SocialAuthButtons
           mode="signup"
-          onGoogleClick={handleGoogleSignUp}
+          onGoogleClick={handleGoogleAuth}
           disabled={isDisabled}
         />
 
@@ -172,4 +115,3 @@ export default function SignupPage() {
     </div>
   )
 }
-

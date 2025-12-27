@@ -15,8 +15,8 @@ export type { AuthResult, OAuthProvider } from "@/lib/auth/types"
  * Signs up a new user with email and password.
  * Stores the user's full name in user metadata.
  * 
- * If email confirmation is required, returns success with a message.
- * If immediate session (email confirmation disabled), sets cookies and redirects.
+ * If email confirmation is required, redirects to verify-email page.
+ * If immediate session (email confirmation disabled), sets cookies and redirects to dashboard.
  * 
  * @param formData - The signup form data
  * @param redirectTo - URL to redirect to after successful sign-up (default: "/dashboard")
@@ -32,6 +32,7 @@ export async function signUp(formData: SignupFormData, redirectTo: string = "/da
 
   const { email, password, fullName } = validationResult.data
   let shouldRedirect = false
+  let redirectPath = redirectTo
 
   try {
     const supabase = await createClient()
@@ -41,7 +42,8 @@ export async function signUp(formData: SignupFormData, redirectTo: string = "/da
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${await getBaseUrl()}/auth/callback`,
+        // Email confirmation links go to /auth/confirm route
+        emailRedirectTo: `${await getBaseUrl()}/auth/confirm`,
       },
     })
 
@@ -63,28 +65,30 @@ export async function signUp(formData: SignupFormData, redirectTo: string = "/da
         }
       }
       
-      return { success: true, message: "Please check your email to verify your account." }
-    }
-
-    // If we got a session, the user is signed in (email confirmation disabled)
-    // With @supabase/ssr@0.8.0+, cookies are automatically set via the setAll callback
-    if (data.session) {
+      // Email confirmation required - redirect to verify-email page
+      shouldRedirect = true
+      redirectPath = `/verify-email?email=${encodeURIComponent(email)}`
+    } else if (data.session) {
+      // If we got a session, the user is signed in (email confirmation disabled)
+      // With @supabase/ssr@0.8.0+, cookies are automatically set via the setAll callback
       revalidatePath("/", "layout")
       shouldRedirect = true
     } else {
-      return { success: true, message: "Please check your email to verify your account." }
+      // Fallback: email confirmation required
+      shouldRedirect = true
+      redirectPath = `/verify-email?email=${encodeURIComponent(email)}`
     }
   } catch (error) {
     console.error("Unexpected signup error:", error)
     return { success: false, error: getDefaultErrorMessage() }
   }
   
-  // Redirect after cookies are set (outside try/catch because redirect throws)
+  // Redirect after processing (outside try/catch because redirect throws)
   if (shouldRedirect) {
-    redirect(redirectTo)
+    redirect(redirectPath)
   }
   
-  return { success: true, message: "Please check your email to verify your account." }
+  return { success: true }
 }
 
 /**

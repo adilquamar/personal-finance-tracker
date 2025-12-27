@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { isRedirectError } from "next/dist/client/components/redirect"
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth"
-import { signIn, signInWithOAuth } from "@/app/actions/auth"
+import { signIn } from "@/app/actions/auth"
+import { useAuthForm } from "@/lib/hooks/use-auth-form"
 import {
   AuthDivider,
   SocialAuthButtons,
@@ -20,9 +20,16 @@ import { Form } from "@/components/ui/form"
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const {
+    isLoading,
+    error,
+    isDisabled,
+    setError,
+    handleGoogleAuth,
+    handleSubmit,
+  } = useAuthForm({
+    oauthErrorMessage: "Failed to sign in with Google. Please try again.",
+  })
 
   // Show errors from OAuth callback or other redirects
   useEffect(() => {
@@ -30,7 +37,7 @@ export default function LoginPage() {
     if (callbackError) {
       setError(callbackError)
     }
-  }, [searchParams])
+  }, [searchParams, setError])
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -40,50 +47,10 @@ export default function LoginPage() {
     },
   })
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const redirectTo = searchParams.get("redirectTo") || "/dashboard"
-      // signIn redirects on success, only returns on error
-      const result = await signIn(data, redirectTo)
-      
-      // If we get here, there was an error (signIn redirects on success)
-      if (!result.success) {
-        setError(result.error)
-      }
-    } catch (error) {
-      // Re-throw redirect errors so Next.js can handle them
-      if (isRedirectError(error)) {
-        throw error
-      }
-      setError("An unexpected error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGoogleSignIn = async () => {
-    setIsOAuthLoading(true)
-    setError(null)
-
-    try {
-      const result = await signInWithOAuth("google")
-      
-      if ("url" in result) {
-        window.location.href = result.url
-      } else {
-        setError(result.error)
-        setIsOAuthLoading(false)
-      }
-    } catch {
-      setError("Failed to sign in with Google. Please try again.")
-      setIsOAuthLoading(false)
-    }
-  }
-
-  const isDisabled = isLoading || isOAuthLoading
+  const onSubmit = handleSubmit<LoginFormData>((data) => {
+    const redirectTo = searchParams.get("redirectTo") || "/dashboard"
+    return signIn(data, redirectTo)
+  })
 
   return (
     <div className="w-full max-w-md">
@@ -132,7 +99,7 @@ export default function LoginPage() {
         {/* Social Auth */}
         <SocialAuthButtons
           mode="signin"
-          onGoogleClick={handleGoogleSignIn}
+          onGoogleClick={handleGoogleAuth}
           disabled={isDisabled}
         />
 

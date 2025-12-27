@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth"
 import { LayoutDashboard, TrendingUp, MessageSquare, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { VerificationSuccessAlert } from "@/components/auth"
 
 export default async function DashboardPage() {
   const user = await requireAuth()
@@ -8,6 +9,9 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Email Verification Success Alert */}
+        <VerificationSuccessAlert />
+
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-medium text-gray-900 mb-2">
