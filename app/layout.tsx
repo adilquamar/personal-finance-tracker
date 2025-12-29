@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { Toaster } from "sonner"
 import { AppHeaderClient } from "@/components/shared"
 import { getSupabaseUser } from "@/lib/auth"
 import "./globals.css"
@@ -26,6 +27,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <AppHeaderClient user={user} />
         {children}
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   )
