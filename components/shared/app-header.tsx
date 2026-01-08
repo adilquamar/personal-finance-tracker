@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation"
 import { ArrowRight, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/shared/logo"
+import { NavButton } from "@/components/shared/nav-button"
 import { SideNav } from "@/components/navigation"
+import { useNavigation } from "@/lib/hooks/use-navigation"
 import type { User } from "@supabase/supabase-js"
 
 // Routes where only the logo should be shown (Stripe pattern)
@@ -20,6 +22,7 @@ interface AppHeaderProps {
 export function AppHeader({ user = null, onLogout }: AppHeaderProps) {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false)
   const pathname = usePathname()
+  const { navigate, isNavigating } = useNavigation()
   
   // Check if we're on an auth page that should show minimal header
   const isMinimalHeader = minimalHeaderRoutes.includes(pathname)
@@ -36,12 +39,15 @@ export function AppHeader({ user = null, onLogout }: AppHeaderProps) {
               {/* Desktop navigation */}
               <div className="hidden sm:flex items-center gap-3">
                 {user ? (
-                  <Button asChild className="bg-indigo-500 hover:bg-indigo-600 text-white gap-1.5">
-                    <Link href="/dashboard">
-                      Dashboard
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <NavButton
+                    href="/dashboard"
+                    onNavigate={navigate}
+                    isLoading={isNavigating("/dashboard")}
+                    icon={<ArrowRight className="h-4 w-4" />}
+                    className="bg-indigo-500 hover:bg-indigo-600 text-white"
+                  >
+                    Dashboard
+                  </NavButton>
                 ) : (
                   <>
                     <Button variant="ghost" asChild className="text-gray-700 hover:bg-gray-100">
@@ -82,4 +88,3 @@ export function AppHeader({ user = null, onLogout }: AppHeaderProps) {
     </>
   )
 }
-
