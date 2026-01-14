@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 interface SocialAuthButtonsProps {
   mode: "signin" | "signup"
@@ -77,7 +78,7 @@ export function SocialAuthButtons({
         )}
       >
         {isLoading ? (
-          <div className="h-5 w-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          <LoadingSpinner size="sm" className="h-5 w-5" />
         ) : (
           <>
             <GoogleIcon className="h-5 w-5" />
