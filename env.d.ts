@@ -15,6 +15,12 @@ declare namespace NodeJS {
      */
     SUPABASE_SECRET_KEY: string
     OPENAI_API_KEY: string
+    /**
+     * Cloudflare Turnstile Site Key for CAPTCHA protection
+     * Safe to expose in client-side code
+     * @see https://developers.cloudflare.com/turnstile/
+     */
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY?: string
   }
 }
 

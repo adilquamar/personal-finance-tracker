@@ -30,7 +30,7 @@ export async function signUp(formData: SignupFormData, redirectTo: string = "/da
     }
   }
 
-  const { email, password, fullName } = validationResult.data
+  const { email, password, fullName, captchaToken } = validationResult.data
   let shouldRedirect = false
   let redirectPath = redirectTo
 
@@ -44,6 +44,8 @@ export async function signUp(formData: SignupFormData, redirectTo: string = "/da
         data: { full_name: fullName },
         // Email confirmation links go to /auth/confirm route
         emailRedirectTo: `${await getBaseUrl()}/auth/confirm`,
+        // Pass CAPTCHA token for bot protection
+        captchaToken,
       },
     })
 
@@ -108,12 +110,19 @@ export async function signIn(formData: LoginFormData, redirectTo: string = "/das
     }
   }
 
-  const { email, password } = validationResult.data
+  const { email, password, captchaToken } = validationResult.data
 
   try {
     const supabase = await createClient()
     
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ 
+      email, 
+      password,
+      options: {
+        // Pass CAPTCHA token for bot protection
+        captchaToken,
+      },
+    })
 
     if (error) {
       console.error("Sign in error:", error.message)
@@ -178,7 +187,7 @@ export async function signInWithOAuth(provider: OAuthProvider): Promise<{ url: s
 /**
  * Sends a password reset email to the specified address.
  */
-export async function resetPassword(email: string): Promise<AuthResult> {
+export async function resetPassword(email: string, captchaToken?: string): Promise<AuthResult> {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { success: false, error: "Please enter a valid email address" }
   }
@@ -188,6 +197,8 @@ export async function resetPassword(email: string): Promise<AuthResult> {
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${await getBaseUrl()}/auth/callback?next=/reset-password`,
+      // Pass CAPTCHA token for bot protection
+      captchaToken,
     })
 
     if (error) {

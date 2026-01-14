@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useCallback } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -13,15 +14,19 @@ import {
   AuthTextField,
   AuthPasswordWithStrength,
   AuthSubmitButton,
+  TurnstileCaptcha,
 } from "@/components/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
 export default function SignupPage() {
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  
   const {
     isLoading,
     error,
     isDisabled,
+    setError,
     handleGoogleAuth,
     handleSubmit,
   } = useAuthForm({
@@ -39,7 +44,23 @@ export default function SignupPage() {
 
   const password = form.watch("password", "")
 
-  const onSubmit = handleSubmit<SignupFormData>(signUp)
+  const handleCaptchaSuccess = useCallback((token: string) => {
+    setCaptchaToken(token)
+  }, [])
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(undefined)
+    setError("CAPTCHA verification failed. Please try again.")
+  }, [setError])
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken(undefined)
+  }, [])
+
+  const onSubmit = handleSubmit<SignupFormData>((data) => {
+    // Include captcha token in form data
+    return signUp({ ...data, captchaToken })
+  })
 
   return (
     <div className="w-full max-w-md">
@@ -84,6 +105,13 @@ export default function SignupPage() {
               name="password"
               disabled={isDisabled}
               password={password}
+            />
+
+            {/* CAPTCHA */}
+            <TurnstileCaptcha
+              onSuccess={handleCaptchaSuccess}
+              onError={handleCaptchaError}
+              onExpire={handleCaptchaExpire}
             />
 
             {/* Error Message */}

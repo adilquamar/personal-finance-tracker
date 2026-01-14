@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -14,12 +14,15 @@ import {
   AuthEmailField,
   AuthPasswordField,
   AuthSubmitButton,
+  TurnstileCaptcha,
 } from "@/components/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
 export default function LoginPage() {
   const searchParams = useSearchParams()
+  const [captchaToken, setCaptchaToken] = useState<string>()
+  
   const {
     isLoading,
     error,
@@ -47,9 +50,23 @@ export default function LoginPage() {
     },
   })
 
+  const handleCaptchaSuccess = useCallback((token: string) => {
+    setCaptchaToken(token)
+  }, [])
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(undefined)
+    setError("CAPTCHA verification failed. Please try again.")
+  }, [setError])
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken(undefined)
+  }, [])
+
   const onSubmit = handleSubmit<LoginFormData>((data) => {
     const redirectTo = searchParams.get("redirectTo") || "/dashboard"
-    return signIn(data, redirectTo)
+    // Include captcha token in form data
+    return signIn({ ...data, captchaToken }, redirectTo)
   })
 
   return (
@@ -78,6 +95,13 @@ export default function LoginPage() {
               disabled={isDisabled}
               showForgotLink
               autoComplete="current-password"
+            />
+
+            {/* CAPTCHA */}
+            <TurnstileCaptcha
+              onSuccess={handleCaptchaSuccess}
+              onError={handleCaptchaError}
+              onExpire={handleCaptchaExpire}
             />
 
             {/* Error Message */}

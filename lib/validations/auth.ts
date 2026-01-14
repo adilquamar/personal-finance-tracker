@@ -9,6 +9,9 @@ export const loginSchema = z.object({
     .string()
     .min(1, "Password is required")
     .min(6, "Password must be at least 6 characters"),
+  captchaToken: z
+    .string()
+    .optional(),
 })
 
 export const signupSchema = z.object({
@@ -28,6 +31,9 @@ export const signupSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Password must contain at least one uppercase letter, one lowercase letter, and one number"
     ),
+  captchaToken: z
+    .string()
+    .optional(),
 })
 
 export const forgotPasswordSchema = z.object({
@@ -35,6 +41,9 @@ export const forgotPasswordSchema = z.object({
     .string()
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
+  captchaToken: z
+    .string()
+    .optional(),
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>

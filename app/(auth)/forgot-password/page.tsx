@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,7 +8,7 @@ import { ArrowLeft, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/validations/auth"
 import { resetPassword } from "@/app/actions/auth"
-import { AuthEmailField, AuthSubmitButton } from "@/components/auth"
+import { AuthEmailField, AuthSubmitButton, TurnstileCaptcha } from "@/components/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
@@ -17,6 +17,7 @@ export default function ForgotPasswordPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submittedEmail, setSubmittedEmail] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string>()
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -25,12 +26,26 @@ export default function ForgotPasswordPage() {
     },
   })
 
+  const handleCaptchaSuccess = useCallback((token: string) => {
+    setCaptchaToken(token)
+  }, [])
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(undefined)
+    setError("CAPTCHA verification failed. Please try again.")
+  }, [])
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken(undefined)
+  }, [])
+
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const result = await resetPassword(data.email)
+      // Pass captcha token to resetPassword
+      const result = await resetPassword(data.email, captchaToken)
       
       if (result.success) {
         setSubmittedEmail(data.email)
@@ -47,6 +62,7 @@ export default function ForgotPasswordPage() {
 
   const handleResend = () => {
     setIsSubmitted(false)
+    setCaptchaToken(undefined)
     form.reset({ email: submittedEmail })
   }
 
@@ -133,6 +149,13 @@ export default function ForgotPasswordPage() {
               control={form.control}
               name="email"
               disabled={isLoading}
+            />
+
+            {/* CAPTCHA */}
+            <TurnstileCaptcha
+              onSuccess={handleCaptchaSuccess}
+              onError={handleCaptchaError}
+              onExpire={handleCaptchaExpire}
             />
 
             {/* Error Message */}
