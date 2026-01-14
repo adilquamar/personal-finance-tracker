@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/types/database"
+import type { ActionResult } from "@/types/common"
 
 /**
  * Authenticated user context passed to action handlers
@@ -20,13 +21,6 @@ export type AuthContext = {
   user: AuthUser
   supabase: SupabaseClient<Database>
 }
-
-/**
- * Standard result type for mutation actions
- */
-export type ActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; error: string }
 
 /**
  * Options for the withAuth wrapper

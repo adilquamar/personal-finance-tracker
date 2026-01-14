@@ -1,67 +1,16 @@
 "use server"
 
-import { withAuthQuery, type AuthContext } from "@/lib/auth"
+import { withAuthQuery } from "@/lib/auth"
 import { getDaysInRange, formatUrlDate } from "@/lib/utils/date-range"
 import { DEFAULT_BUDGET } from "@/lib/constants/budget"
 import type { Expense, ExpenseCategory } from "@/types/expense"
-
-// ============================================================================
-// Types
-// ============================================================================
-
-/**
- * Analytics summary data
- */
-export interface AnalyticsSummary {
-  /** Total amount spent in the date range */
-  totalSpent: number
-  /** Average daily spending */
-  avgDaily: number
-  /** Remaining budget (budget - spent) */
-  remaining: number
-  /** Percentage of budget used (0-100+) */
-  budgetUsed: number
-}
-
-/**
- * Single data point for spending trend chart
- */
-export interface SpendingTrendPoint {
-  /** Date formatted as "yyyy-MM-dd" */
-  date: string
-  /** Total amount spent on this date */
-  amount: number
-}
-
-/**
- * Category breakdown item
- */
-export interface CategoryBreakdownItem {
-  /** The expense category */
-  category: ExpenseCategory
-  /** Total amount spent in this category */
-  amount: number
-  /** Percentage of total spending (0-100) */
-  percentage: number
-}
-
-/**
- * Complete analytics data for a date range
- */
-export interface AnalyticsData {
-  summary: AnalyticsSummary
-  trend: SpendingTrendPoint[]
-  categories: CategoryBreakdownItem[]
-}
-
-/**
- * Input parameters for analytics queries
- */
-export interface AnalyticsInput {
-  startDate: Date
-  endDate: Date
-  budget?: number
-}
+import type {
+  AnalyticsSummary,
+  SpendingTrendPoint,
+  CategoryBreakdownItem,
+  AnalyticsData,
+  AnalyticsInput,
+} from "@/types/analytics"
 
 /**
  * Default/empty analytics data for unauthenticated users

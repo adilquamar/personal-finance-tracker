@@ -13,7 +13,7 @@ import { formatDateLabel } from "@/lib/utils/date-range"
 import { formatCurrency } from "@/lib/utils/format"
 import { parseISO } from "date-fns"
 import { ContentCard } from "@/components/ui/content-card"
-import type { SpendingTrendPoint } from "@/app/actions/analytics"
+import type { SpendingTrendPoint } from "@/types/analytics"
 
 interface SpendingChartProps {
   /** Array of spending data points */

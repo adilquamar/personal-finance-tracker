@@ -12,6 +12,5 @@ export {
   withAuthQueryNoInput,
   type AuthUser,
   type AuthContext,
-  type ActionResult,
 } from "./with-auth"
 

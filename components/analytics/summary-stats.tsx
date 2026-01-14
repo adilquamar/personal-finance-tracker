@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/utils/format"
 import { ContentCard } from "@/components/ui/content-card"
-import type { AnalyticsSummary } from "@/app/actions/analytics"
+import type { AnalyticsSummary } from "@/types/analytics"
 
 interface SummaryStatsProps {
   /** Analytics summary data */

@@ -8,14 +8,7 @@ import {
   isValid,
 } from "date-fns"
 import type { TimeRange } from "@/components/analytics/time-range-selector"
-
-/**
- * Result of date range calculation
- */
-export interface DateRangeResult {
-  startDate: Date
-  endDate: Date
-}
+import type { DateRange } from "@/types/common"
 
 /**
  * Calculates the date range based on the selected time range and optional custom dates.
@@ -37,7 +30,7 @@ export function getDateRangeFromParams(
   range: TimeRange | null,
   customStartDate?: string | null,
   customEndDate?: string | null
-): DateRangeResult {
+): DateRange {
   const today = new Date()
   const todayEnd = endOfDay(today)
 

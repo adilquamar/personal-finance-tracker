@@ -5,11 +5,10 @@ import {
   withAuth,
   withAuthQuery,
   withAuthQueryNoInput,
-  type AuthContext,
-  type ActionResult,
 } from "@/lib/auth"
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/expense"
 import type { Expense } from "@/types/expense"
+import type { ActionResult } from "@/types/common"
 
 /**
  * Result type for expense actions (re-exported for consumers)

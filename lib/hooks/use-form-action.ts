@@ -4,7 +4,7 @@ import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { isRedirectError } from "next/dist/client/components/redirect"
-import type { ActionResult } from "@/lib/auth"
+import type { ActionResult } from "@/types/common"
 
 /**
  * Options for the useFormAction hook

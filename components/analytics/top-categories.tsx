@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/lib/utils/format"
 import { EXPENSE_CATEGORY_LABELS } from "@/types/expense"
 import { ContentCard } from "@/components/ui/content-card"
-import type { CategoryBreakdownItem } from "@/app/actions/analytics"
+import type { CategoryBreakdownItem } from "@/types/analytics"
 
 interface TopCategoriesProps {
   /** Array of category breakdown items sorted by amount descending */
