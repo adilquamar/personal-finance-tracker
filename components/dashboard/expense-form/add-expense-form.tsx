@@ -1,12 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/expense"
 import { addExpense } from "@/app/actions/expenses"
+import { useFormAction } from "@/lib/hooks"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -22,49 +20,33 @@ import { CategorySelectField } from "./category-select-field"
 import { AmountInputField } from "./amount-input-field"
 import { cn } from "@/lib/utils"
 
+const DEFAULT_VALUES: ExpenseFormData = {
+  date: new Date(),
+  category: undefined as unknown as ExpenseFormData["category"],
+  amount: undefined as unknown as number,
+  description: "",
+}
+
 /**
  * Form component for adding new expenses.
  * Uses React Hook Form with Zod validation and server actions.
  */
 export function AddExpenseForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: {
-      date: new Date(),
-      category: undefined,
-      amount: undefined,
-      description: "",
+    defaultValues: DEFAULT_VALUES,
+  })
+
+  const { execute, isLoading } = useFormAction(addExpense, {
+    successMessage: "Expense added successfully!",
+    refreshOnSuccess: true,
+    onSuccess: () => {
+      form.reset(DEFAULT_VALUES)
     },
   })
 
   const onSubmit = async (data: ExpenseFormData) => {
-    setIsLoading(true)
-
-    try {
-      const result = await addExpense(data)
-
-      if (result.success) {
-        toast.success("Expense added successfully!")
-        form.reset({
-          date: new Date(),
-          category: undefined,
-          amount: undefined,
-          description: "",
-        })
-        // Trigger data refresh
-        router.refresh()
-      } else {
-        toast.error(result.error || "Failed to add expense")
-      }
-    } catch (error) {
-      console.error("Error adding expense:", error)
-      toast.error("An unexpected error occurred")
-    } finally {
-      setIsLoading(false)
-    }
+    await execute(data)
   }
 
   return (
@@ -180,4 +162,3 @@ export function AddExpenseForm() {
     </Form>
   )
 }
-
