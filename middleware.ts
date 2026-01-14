@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/types/database'
+import { env } from '@/lib/config/env'
 
 // Routes that require authentication - redirect to /login if not authenticated
 const protectedRoutes = ['/dashboard', '/analytics', '/chatbot']
@@ -32,8 +33,8 @@ export async function middleware(request: NextRequest) {
   // Create Supabase client for middleware
   // This pattern properly handles cookie reading/writing in middleware context
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {

@@ -3,6 +3,7 @@
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
 import { useRef, useCallback } from "react"
 import { cn } from "@/lib/utils"
+import { env } from "@/lib/config/env"
 
 interface TurnstileCaptchaProps {
   /** Callback when CAPTCHA verification succeeds */
@@ -37,7 +38,7 @@ export function TurnstileCaptcha({
     onExpire?.()
   }, [onExpire])
 
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  const siteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   // Don't render if no site key is configured (allows development without CAPTCHA)
   if (!siteKey) {
