@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 
 interface AmountInputFieldProps {
   /** Current amount value */
@@ -14,6 +15,8 @@ interface AmountInputFieldProps {
   placeholder?: string
   /** Additional class names for the container */
   className?: string
+  /** Whether the field has a validation error */
+  hasError?: boolean
 }
 
 /**
@@ -27,6 +30,7 @@ export function AmountInputField({
   disabled = false,
   placeholder = "0.00",
   className,
+  hasError = false,
 }: AmountInputFieldProps) {
   // Track the display value as string to allow intermediate states like "12."
   const [displayValue, setDisplayValue] = React.useState<string>(
@@ -142,7 +146,7 @@ export function AmountInputField({
       >
         $
       </span>
-      <input
+      <Input
         type="text"
         inputMode="decimal"
         value={displayValue}
@@ -151,13 +155,8 @@ export function AmountInputField({
         onBlur={handleBlur}
         disabled={disabled}
         placeholder={placeholder}
-        className={cn(
-          "h-12 w-full rounded-lg border border-gray-200 bg-white pl-8 pr-4 text-base text-gray-900",
-          "placeholder:text-gray-400",
-          "hover:border-gray-300",
-          "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent",
-          "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
-        )}
+        hasError={hasError}
+        className="pl-8"
       />
     </div>
   )

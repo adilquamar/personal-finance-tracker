@@ -1,6 +1,5 @@
 "use client"
 
-import { cn } from "@/lib/utils"
 import {
   FormControl,
   FormField,
@@ -8,6 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import type { Control, FieldValues, Path } from "react-hook-form"
 
 interface AuthTextFieldProps<T extends FieldValues> {
@@ -37,21 +37,12 @@ export function AuthTextField<T extends FieldValues>({
             {label}
           </FormLabel>
           <FormControl>
-            <input
+            <Input
               type={type}
               autoComplete={autoComplete}
               disabled={disabled}
+              hasError={!!fieldState.error}
               {...field}
-              className={cn(
-                "flex h-12 w-full rounded-lg border bg-white px-4 py-3 text-sm",
-                "placeholder:text-gray-400",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:border-indigo-300",
-                "disabled:cursor-not-allowed disabled:opacity-50",
-                "transition-all duration-150",
-                fieldState.error
-                  ? "border-red-300 focus-visible:ring-red-200 focus-visible:border-red-300"
-                  : "border-gray-200"
-              )}
             />
           </FormControl>
           <FormMessage className="text-sm text-red-500" />

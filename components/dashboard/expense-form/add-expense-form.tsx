@@ -119,7 +119,7 @@ export function AddExpenseForm() {
         <FormField
           control={form.control}
           name="amount"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">
                 Amount
@@ -130,6 +130,7 @@ export function AddExpenseForm() {
                   onChange={field.onChange}
                   disabled={isLoading}
                   placeholder="0.00"
+                  hasError={!!fieldState.error}
                 />
               </FormControl>
               <FormMessage />
@@ -141,7 +142,7 @@ export function AddExpenseForm() {
         <FormField
           control={form.control}
           name="description"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">
                 Description
@@ -152,13 +153,7 @@ export function AddExpenseForm() {
                   {...field}
                   placeholder="What was this expense for?"
                   disabled={isLoading}
-                  className={cn(
-                    "h-12 rounded-lg border-gray-200 bg-white px-4 text-base",
-                    "placeholder:text-gray-400",
-                    "hover:border-gray-300",
-                    "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
-                  )}
+                  hasError={!!fieldState.error}
                 />
               </FormControl>
               <FormMessage />

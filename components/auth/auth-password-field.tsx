@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { cn } from "@/lib/utils"
 import { PasswordInput } from "./password-input"
 import {
   FormControl,
@@ -55,12 +54,8 @@ export function AuthPasswordField<T extends FieldValues>({
             <PasswordInput
               autoComplete={autoComplete}
               disabled={disabled}
+              hasError={!!fieldState.error}
               {...field}
-              className={cn(
-                fieldState.error
-                  ? "border-red-300 focus-visible:ring-red-200 focus-visible:border-red-300"
-                  : ""
-              )}
             />
           </FormControl>
           <FormMessage className="text-sm text-red-500" />

@@ -3,26 +3,26 @@
 import * as React from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 
 export interface PasswordInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {}
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  /**
+   * Whether the input has a validation error
+   */
+  hasError?: boolean
+}
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, hasError, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false)
 
     return (
       <div className="relative">
-        <input
+        <Input
           type={showPassword ? "text" : "password"}
-          className={cn(
-            "flex h-12 w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm",
-            "ring-offset-background placeholder:text-gray-400",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:border-indigo-300",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            "transition-all duration-150",
-            className
-          )}
+          hasError={hasError}
+          className={cn("pr-12", className)}
           ref={ref}
           {...props}
         />
