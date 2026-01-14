@@ -34,7 +34,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
   )
 
   // Fetch all analytics data in one efficient call
-  const { summary, trend, categories } = await getAnalyticsData(startDate, endDate)
+  const { summary, trend, categories } = await getAnalyticsData({ startDate, endDate })
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
