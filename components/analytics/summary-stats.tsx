@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/utils/format"
+import { ContentCard } from "@/components/ui/content-card"
 import type { AnalyticsSummary } from "@/app/actions/analytics"
 
 interface SummaryStatsProps {
@@ -22,7 +23,7 @@ function StatCard({
   variant?: "default" | "success" | "warning"
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <ContentCard padding="sm">
       <p className="text-sm text-gray-500 mb-1">{label}</p>
       <p
         className={cn(
@@ -34,7 +35,7 @@ function StatCard({
       >
         {value}
       </p>
-    </div>
+    </ContentCard>
   )
 }
 
@@ -66,4 +67,3 @@ export function SummaryStats({ summary, className }: SummaryStatsProps) {
     </div>
   )
 }
-

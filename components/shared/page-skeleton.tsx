@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { ContentCard } from "@/components/ui/content-card"
 
 /**
  * Page container skeleton - wraps page content with consistent padding
@@ -67,13 +68,11 @@ export function StatsGridSkeleton({
  */
 export function StatCardSkeleton({ className }: { className?: string }) {
   return (
-    <div
-      className={cn("bg-white rounded-xl shadow-sm p-4 space-y-2", className)}
-    >
+    <ContentCard padding="sm" className={cn("space-y-2", className)}>
       <Skeleton className="h-4 w-24" />
       <Skeleton className="h-8 w-20" />
       <Skeleton className="h-3 w-16" />
-    </div>
+    </ContentCard>
   )
 }
 
@@ -97,7 +96,7 @@ export function FormSkeleton({
   className,
 }: FormSkeletonProps) {
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+    <ContentCard className={className}>
       {withTitle && <Skeleton className="h-6 w-32 mb-6" />}
       <div className="space-y-4">
         {layout.map((row, i) =>
@@ -114,7 +113,7 @@ export function FormSkeleton({
           <Skeleton className="h-12 w-full rounded-lg bg-indigo-200" />
         )}
       </div>
-    </div>
+    </ContentCard>
   )
 }
 
@@ -132,7 +131,7 @@ export function QuickActionsSkeleton({
   className,
 }: QuickActionsSkeletonProps) {
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+    <ContentCard className={className}>
       <Skeleton className="h-6 w-28 mb-6" />
       <div className="grid grid-cols-2 gap-4">
         {[...Array(count)].map((_, i) => (
@@ -142,7 +141,7 @@ export function QuickActionsSkeleton({
           />
         ))}
       </div>
-    </div>
+    </ContentCard>
   )
 }
 
@@ -169,7 +168,7 @@ export function TableSkeleton({
   className,
 }: TableSkeletonProps) {
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm", className)}>
+    <ContentCard padding="sm" className={cn("p-0", className)}>
       {withTitle && (
         <div className="p-6 border-b border-gray-100">
           <Skeleton className="h-6 w-44" />
@@ -198,7 +197,7 @@ export function TableSkeleton({
           </div>
         ))}
       </div>
-    </div>
+    </ContentCard>
   )
 }
 
@@ -276,7 +275,7 @@ export function CardSkeleton({
   children,
 }: CardSkeletonProps) {
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+    <ContentCard className={className}>
       {children ?? (
         <>
           {withHeader && <Skeleton className="h-6 w-32 mb-4" />}
@@ -290,6 +289,6 @@ export function CardSkeleton({
           </div>
         </>
       )}
-    </div>
+    </ContentCard>
   )
 }

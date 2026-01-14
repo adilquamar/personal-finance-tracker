@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/utils/format"
 import { EXPENSE_CATEGORY_LABELS } from "@/types/expense"
+import { ContentCard } from "@/components/ui/content-card"
 import type { CategoryBreakdownItem } from "@/app/actions/analytics"
 
 interface TopCategoriesProps {
@@ -52,14 +52,14 @@ export function TopCategories({ categories, className }: TopCategoriesProps) {
   // Handle empty state
   if (!categories || categories.length === 0) {
     return (
-      <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+      <ContentCard className={className}>
         <h3 className="text-lg font-medium text-gray-900 mb-4">
           Top Categories
         </h3>
         <div className="h-48 flex items-center justify-center">
           <p className="text-gray-500">No expenses yet</p>
         </div>
-      </div>
+      </ContentCard>
     )
   }
 
@@ -67,7 +67,7 @@ export function TopCategories({ categories, className }: TopCategoriesProps) {
   const maxAmount = categories[0]?.amount || 0
 
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+    <ContentCard className={className}>
       <h3 className="text-lg font-medium text-gray-900 mb-4">Top Categories</h3>
       <div className="space-y-4">
         {categories.map((item) => (
@@ -78,6 +78,6 @@ export function TopCategories({ categories, className }: TopCategoriesProps) {
           />
         ))}
       </div>
-    </div>
+    </ContentCard>
   )
 }

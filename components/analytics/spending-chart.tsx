@@ -9,10 +9,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
-import { cn } from "@/lib/utils"
 import { formatDateLabel } from "@/lib/utils/date-range"
 import { formatCurrency } from "@/lib/utils/format"
 import { parseISO } from "date-fns"
+import { ContentCard } from "@/components/ui/content-card"
 import type { SpendingTrendPoint } from "@/app/actions/analytics"
 
 interface SpendingChartProps {
@@ -81,14 +81,14 @@ export function SpendingChart({ data, className }: SpendingChartProps) {
   // Handle empty state
   if (!data || data.length === 0) {
     return (
-      <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+      <ContentCard className={className}>
         <h3 className="text-lg font-medium text-gray-900 mb-4">
           Spending Trend
         </h3>
         <div className="h-64 flex items-center justify-center">
           <p className="text-gray-500">No spending data for this period</p>
         </div>
-      </div>
+      </ContentCard>
     )
   }
 
@@ -100,7 +100,7 @@ export function SpendingChart({ data, className }: SpendingChartProps) {
   const xAxisInterval = data.length > 14 ? Math.floor(data.length / 7) : 0
 
   return (
-    <div className={cn("bg-white rounded-xl shadow-sm p-6", className)}>
+    <ContentCard className={className}>
       <h3 className="text-lg font-medium text-gray-900 mb-4">Spending Trend</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -150,6 +150,6 @@ export function SpendingChart({ data, className }: SpendingChartProps) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </ContentCard>
   )
 }
