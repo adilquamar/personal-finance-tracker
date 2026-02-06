@@ -5,7 +5,6 @@ import {
   WelcomeSection,
   StatsGrid,
   AddExpenseSection,
-  QuickActionsSection,
   RecentTransactionsSection,
 } from "@/components/dashboard"
 
@@ -38,13 +37,9 @@ export default async function DashboardPage() {
           expenseCount={expenseCount}
         />
 
-        {/* Two Column Layout for Form and Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Add Expense Form Card */}
+        {/* Add Expense Form */}
+        <div className="mb-8">
           <AddExpenseSection />
-
-          {/* Quick Actions Card */}
-          <QuickActionsSection />
         </div>
 
         {/* Recent Transactions */}

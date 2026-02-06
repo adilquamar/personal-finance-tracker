@@ -7,10 +7,6 @@ export {
   DatePickerField,
 } from "./expense-form"
 
-// Quick actions components
-export { QuickActionCard } from "./quick-action-card"
-export { QuickActionsSection } from "./quick-actions-section"
-
 // Transactions components
 export { RecentTransactions } from "./recent-transactions"
 export { RecentTransactionsSection } from "./recent-transactions-section"
