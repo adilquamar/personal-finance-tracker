@@ -65,21 +65,25 @@ export const addExpense = withAuth<ExpenseFormData, Expense>(
 )
 
 /**
- * Gets recent expenses for the authenticated user.
+ * Gets recent expenses for the authenticated user from the past N days.
  *
- * @param limit - Maximum number of expenses to return (default: 10)
+ * @param days - Number of days to look back
  * @returns Array of recent expenses ordered by date descending
  */
 export const getRecentExpenses = withAuthQuery<number, Expense[]>(
-  async ({ user, supabase }, limit) => {
+  async ({ user, supabase }, days) => {
     try {
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - days)
+      const cutoffDate = cutoff.toISOString().split("T")[0]
+
       const { data, error } = await supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
+        .gte("date", cutoffDate)
         .order("date", { ascending: false })
         .order("created_at", { ascending: false })
-        .limit(limit)
 
       if (error) {
         console.error("Error fetching expenses:", error.message)

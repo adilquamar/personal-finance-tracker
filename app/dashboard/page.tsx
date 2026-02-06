@@ -13,7 +13,7 @@ export default async function DashboardPage() {
 
   // Fetch data in parallel
   const [expenses, totalExpenses, expenseCount] = await Promise.all([
-    getRecentExpenses(10),
+    getRecentExpenses(7),
     getTotalExpenses(),
     getExpenseCount(),
   ])
