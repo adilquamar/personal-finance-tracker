@@ -1,14 +1,14 @@
 interface Transaction {
-  description: string
+  title: string
   date: string
   price: string
   category: string
 }
 
 const sampleTransactions: Transaction[] = [
-  { description: 'Grocery Shopping', date: 'Dec 20, 2024', price: '$156.40', category: 'Food' },
-  { description: 'Electric Bill', date: 'Dec 19, 2024', price: '$98.50', category: 'Utilities' },
-  { description: 'Coffee Shop', date: 'Dec 18, 2024', price: '$12.75', category: 'Food' },
+  { title: 'Grocery Shopping', date: 'Dec 20, 2024', price: '$156.40', category: 'Food' },
+  { title: 'Electric Bill', date: 'Dec 19, 2024', price: '$98.50', category: 'Utilities' },
+  { title: 'Coffee Shop', date: 'Dec 18, 2024', price: '$12.75', category: 'Food' },
 ]
 
 export function DashboardPreview() {
@@ -51,7 +51,7 @@ export function DashboardPreview() {
                   <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <p className="text-gray-900">{expense.description}</p>
+                        <p className="text-gray-900">{expense.title}</p>
                         <p className="text-sm text-gray-500">{expense.date}</p>
                       </div>
                       <p className="text-gray-900 font-medium">{expense.price}</p>

@@ -24,7 +24,7 @@ const DEFAULT_VALUES: ExpenseFormData = {
   date: new Date(),
   category: undefined as unknown as ExpenseFormData["category"],
   amount: undefined as unknown as number,
-  description: "",
+  title: "",
 }
 
 /**
@@ -120,20 +120,19 @@ export function AddExpenseForm() {
           )}
         />
 
-        {/* Description Field */}
+        {/* Title Field */}
         <FormField
           control={form.control}
-          name="description"
+          name="title"
           render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">
-                Description
-                <span className="text-gray-400 font-normal ml-1">(optional)</span>
+                Title
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="What was this expense for?"
+                  placeholder="Enter expense title"
                   disabled={isLoading}
                   hasError={!!fieldState.error}
                 />

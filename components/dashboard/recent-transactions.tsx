@@ -89,7 +89,7 @@ function EmptyState() {
 
 /**
  * Table component displaying recent expense transactions.
- * Shows date, description, category (as badge), and amount columns.
+ * Shows date, title, category (as badge), and amount columns.
  */
 export function RecentTransactions({ expenses }: RecentTransactionsProps) {
   if (expenses.length === 0) {
@@ -101,7 +101,7 @@ export function RecentTransactions({ expenses }: RecentTransactionsProps) {
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead className="text-gray-500 font-medium">Date</TableHead>
-          <TableHead className="text-gray-500 font-medium">Description</TableHead>
+          <TableHead className="text-gray-500 font-medium">Title</TableHead>
           <TableHead className="text-gray-500 font-medium">Category</TableHead>
           <TableHead className="text-gray-500 font-medium text-right">
             Amount
@@ -115,8 +115,8 @@ export function RecentTransactions({ expenses }: RecentTransactionsProps) {
               {formatDate(expense.date)}
             </TableCell>
             <TableCell className="text-gray-700">
-              {expense.description || (
-                <span className="text-gray-400 italic">No description</span>
+              {expense.title || (
+                <span className="text-gray-400 italic">No title</span>
               )}
             </TableCell>
             <TableCell>

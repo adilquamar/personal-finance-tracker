@@ -40,13 +40,14 @@ export const expenseSchema = z.object({
   }),
 
   /**
-   * Expense description - optional, max 255 characters
+   * Expense title - required, max 255 characters
    */
-  description: z
-    .string()
-    .max(255, "Description must be at most 255 characters")
-    .optional()
-    .or(z.literal("")),
+  title: z
+    .string({
+      required_error: "Title is required",
+    })
+    .min(1, "Title is required")
+    .max(255, "Title must be at most 255 characters"),
 })
 
 /**

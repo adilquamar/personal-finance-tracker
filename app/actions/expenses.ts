@@ -32,7 +32,7 @@ export const addExpense = withAuth<ExpenseFormData, Expense>(
       }
     }
 
-    const { amount, category, date, description } = validationResult.data
+    const { amount, category, date, title } = validationResult.data
 
     try {
       const { data, error } = await supabase
@@ -42,7 +42,7 @@ export const addExpense = withAuth<ExpenseFormData, Expense>(
           amount,
           category,
           date: date.toISOString().split("T")[0], // Format as YYYY-MM-DD
-          description: description || null,
+          title,
         })
         .select()
         .single()

@@ -45,7 +45,7 @@ export interface Expense {
   amount: number
   category: ExpenseCategory
   date: string
-  description: string | null
+  title: string
   created_at: string
   updated_at: string
 }
@@ -57,7 +57,7 @@ export interface CreateExpenseInput {
   amount: number
   category: ExpenseCategory
   date: string
-  description?: string | null
+  title: string
 }
 
 /**
@@ -67,6 +67,6 @@ export interface UpdateExpenseInput {
   amount?: number
   category?: ExpenseCategory
   date?: string
-  description?: string | null
+  title?: string
 }
 
