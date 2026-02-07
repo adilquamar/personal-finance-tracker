@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth"
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/expense"
 import { formatUrlDate } from "@/lib/utils/date-range"
-import type { Expense } from "@/types/expense"
+import type { Expense, ExpenseCategory } from "@/types/expense"
 import type { ActionResult } from "@/types/common"
 import type { MonthlyComparisonPoint } from "@/types/analytics"
 
@@ -256,6 +256,8 @@ export const getExpenseCount = withAuthQueryNoInput<number>(
 interface TransactionDateRangeInput {
   startDate: Date
   endDate: Date
+  /** Optional category to filter by. When omitted, all categories are returned. */
+  category?: ExpenseCategory
 }
 
 /**
@@ -287,14 +289,21 @@ export const getTransactionsByDateRange = withAuthQuery<
   TransactionDateRangeInput,
   TransactionDateRangeResult
 >(
-  async ({ user, supabase }, { startDate, endDate }) => {
+  async ({ user, supabase }, { startDate, endDate, category }) => {
     try {
-      const { data: expenses, error } = await supabase
+      let query = supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
         .gte("date", formatUrlDate(startDate))
         .lte("date", formatUrlDate(endDate))
+
+      // Apply optional category filter
+      if (category) {
+        query = query.eq("category", category)
+      }
+
+      const { data: expenses, error } = await query
         .order("date", { ascending: false })
         .order("created_at", { ascending: false })
 
