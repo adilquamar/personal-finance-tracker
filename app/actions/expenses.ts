@@ -43,7 +43,7 @@ export const addExpense = withAuth<ExpenseFormData, Expense>(
           user_id: user.id,
           amount,
           category,
-          date: date.toISOString().split("T")[0], // Format as YYYY-MM-DD
+          date: formatUrlDate(date), // Format as YYYY-MM-DD in local timezone
           title,
         })
         .select()
@@ -54,8 +54,8 @@ export const addExpense = withAuth<ExpenseFormData, Expense>(
         return { success: false, error: "Failed to add expense. Please try again." }
       }
 
-      // Revalidate dashboard to show new expense
-      revalidatePath("/dashboard")
+      // Revalidate all pages so any route displaying expense data gets fresh results
+      revalidatePath("/", "layout")
 
       return { success: true, data }
     } catch (error) {
@@ -291,12 +291,17 @@ export const getTransactionsByDateRange = withAuthQuery<
 >(
   async ({ user, supabase }, { startDate, endDate, category }) => {
     try {
+      // Use UTC-based upper bound to capture existing dates stored via toISOString()
+      // (which could be +1 day ahead of local timezone). New expenses use local
+      // timezone storage, so this is a backward-compatibility measure.
+      const endDateUTC = endDate.toISOString().split("T")[0]
+
       let query = supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
         .gte("date", formatUrlDate(startDate))
-        .lte("date", formatUrlDate(endDate))
+        .lte("date", endDateUTC)
 
       // Apply optional category filter
       if (category) {
