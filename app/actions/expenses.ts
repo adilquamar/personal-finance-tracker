@@ -7,6 +7,7 @@ import {
   withAuthQueryNoInput,
 } from "@/lib/auth"
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/expense"
+import { formatUrlDate } from "@/lib/utils/date-range"
 import type { Expense } from "@/types/expense"
 import type { ActionResult } from "@/types/common"
 import type { MonthlyComparisonPoint } from "@/types/analytics"
@@ -247,4 +248,69 @@ export const getExpenseCount = withAuthQueryNoInput<number>(
     }
   },
   0 // Fallback for unauthenticated users
+)
+
+/**
+ * Input type for date-range-based transaction queries
+ */
+interface TransactionDateRangeInput {
+  startDate: Date
+  endDate: Date
+}
+
+/**
+ * Result type for transaction queries with total
+ */
+interface TransactionDateRangeResult {
+  expenses: Expense[]
+  total: number
+}
+
+const EMPTY_TRANSACTIONS: TransactionDateRangeResult = {
+  expenses: [],
+  total: 0,
+}
+
+/**
+ * Gets expenses within a date range for the authenticated user.
+ *
+ * @param input - Object containing startDate and endDate
+ * @returns Object with the list of expenses and total amount spent
+ *
+ * @example
+ * const { expenses, total } = await getTransactionsByDateRange({
+ *   startDate: new Date('2024-01-01'),
+ *   endDate: new Date('2024-01-31'),
+ * })
+ */
+export const getTransactionsByDateRange = withAuthQuery<
+  TransactionDateRangeInput,
+  TransactionDateRangeResult
+>(
+  async ({ user, supabase }, { startDate, endDate }) => {
+    try {
+      const { data: expenses, error } = await supabase
+        .from("expenses")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("date", formatUrlDate(startDate))
+        .lte("date", formatUrlDate(endDate))
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: false })
+
+      if (error) {
+        console.error("Error fetching transactions:", error.message)
+        return EMPTY_TRANSACTIONS
+      }
+
+      const expenseList = expenses || []
+      const total = expenseList.reduce((sum, expense) => sum + expense.amount, 0)
+
+      return { expenses: expenseList, total }
+    } catch (error) {
+      console.error("Unexpected error fetching transactions:", error)
+      return EMPTY_TRANSACTIONS
+    }
+  },
+  EMPTY_TRANSACTIONS // Fallback for unauthenticated users
 )
