@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  Receipt,
   TrendingUp,
   MessageSquare,
   Settings,
@@ -41,6 +42,13 @@ export const navigationConfig: NavGroup[] = [
         label: "Dashboard",
         href: "/dashboard",
         description: "Overview of your finances",
+      },
+      {
+        id: "transactions",
+        icon: Receipt,
+        label: "Transactions",
+        href: "/transactions",
+        description: "View your transaction history",
       },
       {
         id: "analytics",
