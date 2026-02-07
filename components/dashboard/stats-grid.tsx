@@ -1,38 +1,43 @@
 import { StatCard } from "./stat-card"
 import { formatCurrency } from "@/lib/utils/format"
 
+// Placeholder budget values until user budgets are implemented
+const MONTHLY_BUDGET = 2000
+const YEARLY_BUDGET = 24000
+
 interface StatsGridProps {
-  totalExpenses: number
-  uniqueCategories: number
-  expenseCount: number
+  currentMonthTotal: number
+  lastMonthTotal: number
 }
 
 export function StatsGrid({
-  totalExpenses,
-  uniqueCategories,
-  expenseCount,
+  currentMonthTotal,
+  lastMonthTotal,
 }: StatsGridProps) {
+  const monthlyRemaining = MONTHLY_BUDGET - currentMonthTotal
+  const yearlyRemaining = YEARLY_BUDGET - currentMonthTotal // Placeholder: only uses current month for now
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <StatCard
-        label="Total Expenses"
-        value={formatCurrency(totalExpenses)}
-        sublabel="All time"
+        label="This Month"
+        value={formatCurrency(currentMonthTotal)}
+        sublabel="Total spending"
       />
       <StatCard
-        label="Categories"
-        value={uniqueCategories.toString()}
-        sublabel="Active"
+        label="Last Month"
+        value={formatCurrency(lastMonthTotal)}
+        sublabel="Total spending"
       />
       <StatCard
-        label="Transactions"
-        value={expenseCount.toString()}
-        sublabel="All time"
+        label="Monthly Budget Remaining"
+        value={formatCurrency(monthlyRemaining)}
+        sublabel={`of ${formatCurrency(MONTHLY_BUDGET)} budget`}
       />
       <StatCard
-        label="Budget"
-        value="--"
-        sublabel="Not set"
+        label="Yearly Budget Remaining"
+        value={formatCurrency(yearlyRemaining)}
+        sublabel={`of ${formatCurrency(YEARLY_BUDGET)} budget`}
       />
     </div>
   )

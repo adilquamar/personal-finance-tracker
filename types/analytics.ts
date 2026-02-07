@@ -64,3 +64,16 @@ export interface AnalyticsInput {
   /** Optional budget amount for calculations */
   budget?: number
 }
+
+/**
+ * Single data point for the monthly spending comparison chart.
+ * Represents cumulative spending up to a given day of the month.
+ */
+export interface MonthlyComparisonPoint {
+  /** Day of the month (1-31) */
+  day: number
+  /** Cumulative spending for the current month, null for future days */
+  currentMonth: number | null
+  /** Cumulative spending for the previous month */
+  lastMonth: number
+}

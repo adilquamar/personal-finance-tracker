@@ -9,6 +9,7 @@ import {
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/expense"
 import type { Expense } from "@/types/expense"
 import type { ActionResult } from "@/types/common"
+import type { MonthlyComparisonPoint } from "@/types/analytics"
 
 /**
  * Result type for expense actions (re-exported for consumers)
@@ -93,6 +94,101 @@ export const getRecentExpenses = withAuthQuery<number, Expense[]>(
       return data || []
     } catch (error) {
       console.error("Unexpected error fetching expenses:", error)
+      return []
+    }
+  },
+  [] // Fallback for unauthenticated users
+)
+
+/**
+ * Gets cumulative monthly spending comparison data for the current and previous month.
+ *
+ * @returns Array of data points with cumulative spending per day for both months
+ */
+export const getMonthlySpendingComparison = withAuthQueryNoInput<MonthlyComparisonPoint[]>(
+  async ({ user, supabase }) => {
+    try {
+      const now = new Date()
+      const currentYear = now.getFullYear()
+      const currentMonth = now.getMonth() // 0-indexed
+      const today = now.getDate()
+
+      // Current month range
+      const currentMonthStart = new Date(currentYear, currentMonth, 1)
+      const currentMonthEnd = new Date(currentYear, currentMonth + 1, 0) // last day of current month
+      const daysInCurrentMonth = currentMonthEnd.getDate()
+
+      // Previous month range
+      const prevMonthStart = new Date(currentYear, currentMonth - 1, 1)
+      const prevMonthEnd = new Date(currentYear, currentMonth, 0) // last day of previous month
+      const daysInPrevMonth = prevMonthEnd.getDate()
+
+      const formatDate = (d: Date) => d.toISOString().split("T")[0]
+
+      // Fetch expenses for both months in parallel
+      const [currentRes, prevRes] = await Promise.all([
+        supabase
+          .from("expenses")
+          .select("date, amount")
+          .eq("user_id", user.id)
+          .gte("date", formatDate(currentMonthStart))
+          .lte("date", formatDate(currentMonthEnd)),
+        supabase
+          .from("expenses")
+          .select("date, amount")
+          .eq("user_id", user.id)
+          .gte("date", formatDate(prevMonthStart))
+          .lte("date", formatDate(prevMonthEnd)),
+      ])
+
+      if (currentRes.error || prevRes.error) {
+        console.error("Error fetching monthly comparison:", currentRes.error?.message || prevRes.error?.message)
+        return []
+      }
+
+      // Aggregate daily spending for current month
+      const currentDailyMap: Record<number, number> = {}
+      for (const row of currentRes.data || []) {
+        const day = new Date(row.date + "T00:00:00").getDate()
+        currentDailyMap[day] = (currentDailyMap[day] || 0) + row.amount
+      }
+
+      // Aggregate daily spending for previous month
+      const prevDailyMap: Record<number, number> = {}
+      for (const row of prevRes.data || []) {
+        const day = new Date(row.date + "T00:00:00").getDate()
+        prevDailyMap[day] = (prevDailyMap[day] || 0) + row.amount
+      }
+
+      // Build cumulative data points
+      const totalDays = Math.max(daysInCurrentMonth, daysInPrevMonth)
+      const result: MonthlyComparisonPoint[] = []
+      let currentCumulative = 0
+      let prevCumulative = 0
+
+      for (let day = 1; day <= totalDays; day++) {
+        // Previous month cumulative
+        if (day <= daysInPrevMonth) {
+          prevCumulative += prevDailyMap[day] || 0
+        }
+
+        // Current month cumulative (null for future days)
+        let currentMonthValue: number | null = null
+        if (day <= today && day <= daysInCurrentMonth) {
+          currentCumulative += currentDailyMap[day] || 0
+          currentMonthValue = currentCumulative
+        }
+
+        result.push({
+          day,
+          currentMonth: currentMonthValue,
+          lastMonth: prevCumulative,
+        })
+      }
+
+      return result
+    } catch (error) {
+      console.error("Unexpected error fetching monthly comparison:", error)
       return []
     }
   },

@@ -16,5 +16,8 @@ export { TransactionsTableSkeleton } from "./transactions-table-skeleton"
 export { StatCard } from "./stat-card"
 export { StatsGrid } from "./stats-grid"
 
+// Chart components
+export { MonthlySpendingChart } from "./monthly-spending-chart"
+
 // Other components
 export { WelcomeSection } from "./welcome-section"

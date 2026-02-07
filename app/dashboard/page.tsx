@@ -1,25 +1,28 @@
 import { requireAuth } from "@/lib/auth"
-import { getRecentExpenses, getTotalExpenses, getExpenseCount } from "@/app/actions/expenses"
+import { getRecentExpenses, getMonthlySpendingComparison } from "@/app/actions/expenses"
 import { VerificationSuccessAlert } from "@/components/auth"
 import {
   WelcomeSection,
   StatsGrid,
   AddExpenseSection,
   RecentTransactionsSection,
+  MonthlySpendingChart,
 } from "@/components/dashboard"
 
 export default async function DashboardPage() {
   const user = await requireAuth()
 
   // Fetch data in parallel
-  const [expenses, totalExpenses, expenseCount] = await Promise.all([
+  const [expenses, monthlyComparison] = await Promise.all([
     getRecentExpenses(7),
-    getTotalExpenses(),
-    getExpenseCount(),
+    getMonthlySpendingComparison(),
   ])
 
-  // Get unique categories count
-  const uniqueCategories = new Set(expenses.map((e) => e.category)).size
+  // Derive monthly totals from comparison data
+  const lastPoint = monthlyComparison[monthlyComparison.length - 1]
+  const currentMonthTotal =
+    monthlyComparison.findLast((p) => p.currentMonth != null)?.currentMonth ?? 0
+  const lastMonthTotal = lastPoint?.lastMonth ?? 0
 
   return (
     <div className="min-h-screen bg-gray-50 pt-16">
@@ -32,9 +35,8 @@ export default async function DashboardPage() {
 
         {/* Stats Grid */}
         <StatsGrid
-          totalExpenses={totalExpenses}
-          uniqueCategories={uniqueCategories}
-          expenseCount={expenseCount}
+          currentMonthTotal={currentMonthTotal}
+          lastMonthTotal={lastMonthTotal}
         />
 
         {/* Add Expense Form */}
@@ -44,6 +46,9 @@ export default async function DashboardPage() {
 
         {/* Recent Transactions */}
         <RecentTransactionsSection expenses={expenses} />
+
+        {/* Monthly Spending Comparison Chart */}
+        <MonthlySpendingChart data={monthlyComparison} className="mt-8" />
       </div>
     </div>
   )
