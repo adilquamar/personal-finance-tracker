@@ -12,14 +12,13 @@ import type {
   BudgetSnapshot,
   MonthlyBudgetResult,
 } from "@/types/budget"
-import type { ActionResult } from "@/types/common"
 import type { Expense } from "@/types/expense"
 
 
 /**
  * All data needed for the budget page, computed server-side for efficiency.
  */
-export interface BudgetPageData {
+interface BudgetPageData {
   /** Budgets enriched with current-period spending data */
   budgets: BudgetWithSpending[]
   /** Snapshot for the current (in-progress) month */
@@ -29,11 +28,6 @@ export interface BudgetPageData {
   /** Per-category, per-month breakdown for the current year (monthly budgets only) */
   monthlyBreakdown: MonthlyBudgetResult[]
 }
-
-/**
- * Result type for budget mutation actions (re-exported for consumers)
- */
-export type BudgetActionResult = ActionResult<Budget>
 
 /**
  * Input for deleteBudget action
@@ -312,35 +306,6 @@ export const deleteBudget = withAuth<DeleteBudgetInput, void>(
     }
   },
   { errorMessage: "You must be logged in to delete budgets" }
-)
-
-/**
- * Gets all budgets for the authenticated user, ordered by category then period.
- *
- * @returns Array of budgets or empty array if error/not authenticated
- */
-export const getUserBudgets = withAuthQueryNoInput<Budget[]>(
-  async ({ user, supabase }) => {
-    try {
-      const { data, error } = await supabase
-        .from("budgets")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("category", { ascending: true })
-        .order("period", { ascending: true })
-
-      if (error) {
-        console.error("Error fetching budgets:", error.message)
-        return []
-      }
-
-      return data || []
-    } catch (error) {
-      console.error("Unexpected error fetching budgets:", error)
-      return []
-    }
-  },
-  [] // Fallback for unauthenticated users
 )
 
 /**

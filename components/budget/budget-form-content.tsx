@@ -45,7 +45,7 @@ import {
 // Types
 // ---------------------------------------------------------------------------
 
-export interface BudgetFormContentProps {
+interface BudgetFormContentProps {
   /** Budget to edit – when provided the form is in edit mode */
   editBudget?: Budget | null
   /** All existing budgets for the user, used for filtering & cross-validation */

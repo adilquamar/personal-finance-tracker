@@ -33,24 +33,6 @@ export interface Budget {
 }
 
 /**
- * Data required to create a new budget
- */
-export interface CreateBudgetInput {
-  category: ExpenseCategory
-  period: BudgetPeriod
-  amount: number
-}
-
-/**
- * Data for updating an existing budget
- */
-export interface UpdateBudgetInput {
-  category?: ExpenseCategory
-  period?: BudgetPeriod
-  amount?: number
-}
-
-/**
  * Enriched budget type with computed spending data
  */
 export interface BudgetWithSpending extends Budget {
