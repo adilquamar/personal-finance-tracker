@@ -49,7 +49,6 @@ export type Database = {
           }
         ]
       }
-    }
       budgets: {
         Row: {
           id: string
