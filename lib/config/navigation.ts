@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Receipt,
+  Wallet,
   TrendingUp,
   MessageSquare,
   Settings,
@@ -49,6 +50,13 @@ export const navigationConfig: NavGroup[] = [
         label: "Transactions",
         href: "/transactions",
         description: "View your transaction history",
+      },
+      {
+        id: "budget",
+        icon: Wallet,
+        label: "Budget",
+        href: "/budget",
+        description: "Manage your spending budgets",
       },
       {
         id: "analytics",

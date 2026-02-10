@@ -1,4 +1,5 @@
 import type { ExpenseCategory } from './expense'
+import type { BudgetPeriod } from './budget'
 
 /**
  * Database type definitions for Supabase client typing.
@@ -49,6 +50,45 @@ export type Database = {
         ]
       }
     }
+      budgets: {
+        Row: {
+          id: string
+          user_id: string
+          category: ExpenseCategory
+          period: BudgetPeriod
+          amount: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category: ExpenseCategory
+          period: BudgetPeriod
+          amount: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category?: ExpenseCategory
+          period?: BudgetPeriod
+          amount?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'budgets_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+    }
     Views: {
       [_ in never]: never
     }
@@ -57,6 +97,7 @@ export type Database = {
     }
     Enums: {
       expense_category: ExpenseCategory
+      budget_period: BudgetPeriod
     }
     CompositeTypes: {
       [_ in never]: never
