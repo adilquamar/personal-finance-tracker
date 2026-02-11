@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { EXPENSE_CATEGORIES, type ExpenseCategory } from "@/types/expense"
 import { BUDGET_PERIODS, type BudgetPeriod } from "@/types/budget"
+import { amountValidator, categoryValidator } from "./shared"
 
 /**
  * Zod schema for budget form validation
@@ -9,10 +9,7 @@ export const budgetSchema = z.object({
   /**
    * Expense category - must be one of the defined categories
    */
-  category: z.enum(EXPENSE_CATEGORIES as [ExpenseCategory, ...ExpenseCategory[]], {
-    required_error: "Category is required",
-    invalid_type_error: "Please select a valid category",
-  }),
+  category: categoryValidator,
 
   /**
    * Budget period - monthly or yearly
@@ -25,19 +22,7 @@ export const budgetSchema = z.object({
   /**
    * Budget amount - must be positive with max 2 decimal places
    */
-  amount: z
-    .number({
-      required_error: "Amount is required",
-      invalid_type_error: "Amount must be a number",
-    })
-    .positive("Amount must be greater than 0")
-    .refine(
-      (val) => {
-        const decimalPlaces = (val.toString().split(".")[1] || "").length
-        return decimalPlaces <= 2
-      },
-      { message: "Amount can have at most 2 decimal places" }
-    ),
+  amount: amountValidator,
 })
 
 /**
