@@ -1,4 +1,5 @@
-import type { Subscription } from "@/types/subscription"
+import type { Subscription, SubscriptionRecurrence } from "@/types/subscription"
+import { getOrdinal } from "./format"
 
 /**
  * Returns the number of days in a given month.
@@ -105,4 +106,47 @@ export function computeNextBillingDate(
   // Upcoming – this year
   const maxDay = getDaysInMonth(currentYear, billingMonth + 1)
   return toDateString(currentYear, billingMonth, Math.min(billingDay, maxDay))
+}
+
+/**
+ * Returns a human-readable billing schedule label.
+ *
+ * - Monthly: "Every 15th"
+ * - Yearly:  "Every Jun 15"
+ */
+export function getBillingDateText(
+  billingAnchorDate: string,
+  recurrence: SubscriptionRecurrence
+): string {
+  const date = new Date(billingAnchorDate + "T00:00:00")
+  const day = date.getDate()
+
+  if (recurrence === "monthly") {
+    return `Every ${getOrdinal(day)}`
+  }
+
+  const month = date.toLocaleString("en-US", { month: "short" })
+  return `Every ${month} ${day}`
+}
+
+/**
+ * Creates a stable reference Date from a day-of-month number.
+ * Uses January 2024 as the anchor month (31 days) so all days 1-31 are valid.
+ */
+export function dateFromDay(day: number): Date {
+  return new Date(2024, 0, day)
+}
+
+/**
+ * Extracts the day-of-month number from a billing_anchor_date string (YYYY-MM-DD).
+ */
+export function getDayFromAnchor(anchorDate: string): number {
+  return new Date(anchorDate + "T00:00:00").getDate()
+}
+
+/**
+ * Parses a billing_anchor_date string (YYYY-MM-DD) into a Date object.
+ */
+export function getDateFromAnchor(anchorDate: string): Date {
+  return new Date(anchorDate + "T00:00:00")
 }
