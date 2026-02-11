@@ -4,7 +4,7 @@ import type { Database } from '@/types/database'
 import { env } from '@/lib/config/env'
 
 // Routes that require authentication - redirect to /login if not authenticated
-const protectedRoutes = ['/dashboard', '/analytics', '/chatbot', '/budget']
+const protectedRoutes = ['/dashboard', '/analytics', '/chatbot', '/budget', '/subscriptions']
 
 // Auth routes - redirect to /dashboard if already authenticated
 const authRoutes = ['/login', '/signup', '/forgot-password']
