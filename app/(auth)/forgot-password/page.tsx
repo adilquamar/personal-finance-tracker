@@ -8,16 +8,22 @@ import { ArrowLeft, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { forgotPasswordSchema, type ForgotPasswordFormData } from "@/lib/validations/auth"
 import { resetPassword } from "@/app/actions/auth"
+import { useAuthForm } from "@/lib/hooks/use-auth-form"
 import { AuthEmailField, AuthSubmitButton, TurnstileCaptcha } from "@/components/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form } from "@/components/ui/form"
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submittedEmail, setSubmittedEmail] = useState("")
-  const [error, setError] = useState<string | null>(null)
   const [captchaToken, setCaptchaToken] = useState<string>()
+
+  const {
+    isLoading,
+    error,
+    setError,
+    handleSubmit,
+  } = useAuthForm()
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -33,32 +39,21 @@ export default function ForgotPasswordPage() {
   const handleCaptchaError = useCallback(() => {
     setCaptchaToken(undefined)
     setError("CAPTCHA verification failed. Please try again.")
-  }, [])
+  }, [setError])
 
   const handleCaptchaExpire = useCallback(() => {
     setCaptchaToken(undefined)
   }, [])
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      // Pass captcha token to resetPassword
-      const result = await resetPassword(data.email, captchaToken)
-      
-      if (result.success) {
-        setSubmittedEmail(data.email)
+  const onSubmit = handleSubmit<ForgotPasswordFormData>(
+    (data) => resetPassword(data.email, captchaToken),
+    {
+      onSuccess: () => {
+        setSubmittedEmail(form.getValues("email"))
         setIsSubmitted(true)
-      } else {
-        setError(result.error)
-      }
-    } catch {
-      setError("An unexpected error occurred. Please try again.")
-    } finally {
-      setIsLoading(false)
+      },
     }
-  }
+  )
 
   const handleResend = () => {
     setIsSubmitted(false)

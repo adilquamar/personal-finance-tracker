@@ -29,8 +29,14 @@ interface UseAuthFormReturn {
   handleGoogleAuth: () => Promise<void>
   /** Wrapper for form submission that handles loading state and errors */
   handleSubmit: <T>(
-    submitFn: (data: T) => Promise<AuthResult>
+    submitFn: (data: T) => Promise<AuthResult>,
+    options?: HandleSubmitOptions
   ) => (data: T) => Promise<void>
+}
+
+interface HandleSubmitOptions {
+  /** Callback invoked when the action returns success (without redirecting) */
+  onSuccess?: (result: Extract<AuthResult, { success: true }>) => void
 }
 
 const DEFAULT_OPTIONS: UseAuthFormOptions = {
@@ -78,7 +84,7 @@ export function useAuthForm(options: UseAuthFormOptions = {}): UseAuthFormReturn
   }, [oauthErrorMessage])
 
   const handleSubmit = useCallback(
-    <T,>(submitFn: (data: T) => Promise<AuthResult>) =>
+    <T,>(submitFn: (data: T) => Promise<AuthResult>, options?: HandleSubmitOptions) =>
       async (data: T) => {
         setIsLoading(true)
         setError(null)
@@ -89,6 +95,8 @@ export function useAuthForm(options: UseAuthFormOptions = {}): UseAuthFormReturn
           // If we get here without redirect, check for errors
           if (!result.success && result.error) {
             setError(result.error)
+          } else if (result.success) {
+            options?.onSuccess?.(result)
           }
         } catch (err) {
           // Re-throw redirect errors so Next.js can handle them

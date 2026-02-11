@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { BudgetTable } from "@/components/budget/budget-table"
 import { BudgetFormDialog } from "@/components/budget/budget-form-dialog"
 import { deleteBudget } from "@/app/actions/budget"
+import { useFormAction } from "@/lib/hooks/use-form-action"
 import type { BudgetWithSpending } from "@/types/budget"
 
 interface BudgetPageContentProps {
@@ -29,11 +30,16 @@ export function BudgetPageContent({ budgets }: BudgetPageContentProps) {
     setDialogOpen(true)
   }, [])
 
+  const { execute: executeDelete } = useFormAction(deleteBudget, {
+    successMessage: "Budget deleted successfully!",
+    refreshOnSuccess: true,
+  })
+
   const handleDelete = React.useCallback(
     async (budget: BudgetWithSpending) => {
-      await deleteBudget({ id: budget.id })
+      await executeDelete({ id: budget.id })
     },
-    []
+    [executeDelete]
   )
 
   const handleOpenChange = React.useCallback((open: boolean) => {
