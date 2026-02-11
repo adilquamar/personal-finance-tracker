@@ -12,6 +12,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is required"),
   /** Cloudflare Turnstile Site Key - optional for development */
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
+  /** Secret token for authenticating Vercel Cron requests - optional, only set in production */
+  CRON_SECRET: z.string().optional(),
 })
 
 /**
@@ -27,6 +29,7 @@ export const env = envSchema.parse({
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+  CRON_SECRET: process.env.CRON_SECRET,
 })
 
 /**
