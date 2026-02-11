@@ -46,6 +46,7 @@ export interface Expense {
   category: ExpenseCategory
   date: string
   title: string
+  subscription_id: string | null
   created_at: string
   updated_at: string
 }

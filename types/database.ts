@@ -1,5 +1,6 @@
 import type { ExpenseCategory } from './expense'
 import type { BudgetPeriod } from './budget'
+import type { SubscriptionRecurrence } from './subscription'
 
 /**
  * Database type definitions for Supabase client typing.
@@ -16,6 +17,7 @@ export type Database = {
           category: ExpenseCategory
           date: string
           title: string
+          subscription_id: string | null
           created_at: string
           updated_at: string
         }
@@ -26,6 +28,7 @@ export type Database = {
           category: ExpenseCategory
           date: string
           title: string
+          subscription_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -36,6 +39,7 @@ export type Database = {
           category?: ExpenseCategory
           date?: string
           title?: string
+          subscription_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -45,6 +49,13 @@ export type Database = {
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'expenses_subscription_id_fkey'
+            columns: ['subscription_id']
+            isOneToOne: false
+            referencedRelation: 'subscriptions'
             referencedColumns: ['id']
           }
         ]
@@ -87,6 +98,53 @@ export type Database = {
           }
         ]
       }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          amount: number
+          category: ExpenseCategory
+          recurrence: SubscriptionRecurrence
+          billing_anchor_date: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          amount: number
+          category: ExpenseCategory
+          recurrence: SubscriptionRecurrence
+          billing_anchor_date: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          amount?: number
+          category?: ExpenseCategory
+          recurrence?: SubscriptionRecurrence
+          billing_anchor_date?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -97,6 +155,7 @@ export type Database = {
     Enums: {
       expense_category: ExpenseCategory
       budget_period: BudgetPeriod
+      subscription_recurrence: SubscriptionRecurrence
     }
     CompositeTypes: {
       [_ in never]: never
