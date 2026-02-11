@@ -17,7 +17,7 @@ import type { ExpenseCategory } from "@/types/expense"
 export async function GET(request: Request) {
   // 1. Verify the request is from Vercel Cron using CRON_SECRET
   const authHeader = request.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 

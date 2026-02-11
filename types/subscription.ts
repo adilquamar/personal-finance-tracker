@@ -35,17 +35,6 @@ export interface Subscription {
 }
 
 /**
- * Data required to create a new subscription
- */
-export interface CreateSubscriptionInput {
-  title: string
-  amount: number
-  category: ExpenseCategory
-  recurrence: SubscriptionRecurrence
-  billing_anchor_date: string
-}
-
-/**
  * Data for updating an existing subscription
  */
 export interface UpdateSubscriptionInput {
