@@ -64,3 +64,22 @@ export interface SubscriptionWithStatus extends Subscription {
   status: 'paid' | 'upcoming'
   next_billing_date: string  // YYYY-MM-DD of next occurrence
 }
+
+/**
+ * Structured data returned by getSubscriptionsPageData for the subscriptions page
+ */
+export interface SubscriptionsPageData {
+  subscriptions: Subscription[]
+  monthlyPaid: SubscriptionWithStatus[]
+  monthlyUpcoming: SubscriptionWithStatus[]
+  yearlyPaid: SubscriptionWithStatus[]
+  yearlyUpcoming: SubscriptionWithStatus[]
+  stats: {
+    totalMonthlyCost: number
+    totalYearlyCost: number
+    paidThisMonth: number
+    upcomingThisMonth: number
+    paidThisYear: number
+    upcomingThisYear: number
+  }
+}
