@@ -5,9 +5,6 @@ import {
   Wallet,
   TrendingUp,
   MessageSquare,
-  Settings,
-  HelpCircle,
-  CreditCard,
   type LucideIcon,
 } from "lucide-react"
 
@@ -79,38 +76,6 @@ export const navigationConfig: NavGroup[] = [
         label: "AI Chatbot",
         href: "/chatbot",
         description: "Get financial advice",
-      },
-    ],
-  },
-  {
-    id: "account",
-    label: "Account",
-    items: [
-      {
-        id: "billing",
-        icon: CreditCard,
-        label: "Billing",
-        href: "/billing",
-        requiresAuth: true,
-      },
-      {
-        id: "settings",
-        icon: Settings,
-        label: "Settings",
-        href: "/settings",
-        requiresAuth: true,
-      },
-    ],
-  },
-  {
-    id: "support",
-    label: "Support",
-    items: [
-      {
-        id: "help",
-        icon: HelpCircle,
-        label: "Help Center",
-        href: "/help",
       },
     ],
   },
