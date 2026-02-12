@@ -7,6 +7,7 @@ import { ArrowRight, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/shared/logo"
 import { NavButton } from "@/components/shared/nav-button"
+import { NavigationProgress } from "@/components/shared/navigation-progress"
 import { SideNav } from "@/components/navigation"
 import { useNavigation } from "@/lib/hooks/use-navigation"
 import type { User } from "@supabase/supabase-js"
@@ -29,6 +30,7 @@ export function AppHeader({ user = null, onLogout }: AppHeaderProps) {
 
   return (
     <>
+      <NavigationProgress />
       <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200">
         <nav className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
           <Logo />

@@ -2,8 +2,8 @@ import { z } from "zod"
 
 /**
  * Schema for environment variables.
- * This validates environment variables at build/runtime to catch configuration
- * errors early rather than at runtime when the variables are actually used.
+ * This validates environment variables at runtime to catch configuration
+ * errors early rather than when the variables are actually used.
  */
 const envSchema = z.object({
   /** Supabase project URL */
@@ -17,22 +17,38 @@ const envSchema = z.object({
 })
 
 /**
- * Validated environment variables.
- * Import this object instead of accessing process.env directly.
- * 
- * @example
- * import { env } from "@/lib/config/env"
- * 
- * const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)
- */
-export const env = envSchema.parse({
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-  CRON_SECRET: process.env.CRON_SECRET,
-})
-
-/**
  * Type-safe environment variables
  */
 export type Env = z.infer<typeof envSchema>
+
+/**
+ * Lazily validated environment variables.
+ * Validation runs on first access rather than at import time,
+ * which prevents build-time crashes when env vars aren't yet available.
+ *
+ * Import this object instead of accessing process.env directly.
+ *
+ * @example
+ * import { env } from "@/lib/config/env"
+ *
+ * const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)
+ */
+let _env: Env | undefined
+
+function getEnv(): Env {
+  if (!_env) {
+    _env = envSchema.parse({
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      CRON_SECRET: process.env.CRON_SECRET,
+    })
+  }
+  return _env
+}
+
+export const env: Env = new Proxy({} as Env, {
+  get(_target, prop: string) {
+    return getEnv()[prop as keyof Env]
+  },
+})

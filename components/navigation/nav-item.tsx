@@ -1,7 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Loader2 } from "lucide-react"
+import { useSharedNavigation } from "@/lib/contexts"
 import { cn } from "@/lib/utils"
 import type { NavItem as NavItemType } from "@/lib/config/navigation"
 
@@ -12,20 +13,35 @@ interface NavItemProps {
 
 export function NavItem({ item, onNavigate }: NavItemProps) {
   const pathname = usePathname()
+  const { navigate, isNavigating } = useSharedNavigation()
   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+  const isLoading = isNavigating(item.href)
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    // Close the nav drawer
+    onNavigate?.()
+    // Navigate with transition tracking
+    navigate(item.href)
+  }
 
   return (
-    <Link
+    <a
       href={item.href}
-      onClick={onNavigate}
+      onClick={handleClick}
       className={cn(
         "w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-colors",
         isActive
           ? "bg-indigo-50 text-indigo-600"
-          : "text-gray-700 hover:bg-gray-50"
+          : "text-gray-700 hover:bg-gray-50",
+        isLoading && "opacity-70 pointer-events-none"
       )}
     >
-      <item.icon className="h-6 w-6 flex-shrink-0" />
+      {isLoading ? (
+        <Loader2 className="h-6 w-6 flex-shrink-0 animate-spin" />
+      ) : (
+        <item.icon className="h-6 w-6 flex-shrink-0" />
+      )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-base font-medium">{item.label}</span>
@@ -41,7 +57,7 @@ export function NavItem({ item, onNavigate }: NavItemProps) {
           </p>
         )}
       </div>
-    </Link>
+    </a>
   )
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Toaster } from "sonner"
+import { Providers } from "@/components/providers"
 import { AppHeaderClient } from "@/components/shared"
 import { getSupabaseUser } from "@/lib/auth"
 import "./globals.css"
@@ -25,8 +26,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AppHeaderClient user={user} />
-        {children}
+        <Providers>
+          <AppHeaderClient user={user} />
+          {children}
+        </Providers>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
