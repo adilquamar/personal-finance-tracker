@@ -12,6 +12,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is required"),
   /** Cloudflare Turnstile Site Key - optional for development */
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
+  /** Base URL of the app - used for OAuth redirect URLs (e.g., https://your-app.vercel.app) */
+  NEXT_PUBLIC_SITE_URL: z.string().url("NEXT_PUBLIC_SITE_URL must be a valid URL").optional(),
   /** Secret token for authenticating Vercel Cron requests - optional, only set in production */
   CRON_SECRET: z.string().optional(),
 })
@@ -41,6 +43,7 @@ function getEnv(): Env {
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       CRON_SECRET: process.env.CRON_SECRET,
     })
   }

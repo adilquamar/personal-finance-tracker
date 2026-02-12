@@ -22,10 +22,10 @@ export function CTASection({
       <span className="text-indigo-500">Your Finances?</span>
     </>
   ),
-  subheadline = "Start your free trial today. No credit card required. See why thousands trust FinanceTracker with their financial journey.",
+  subheadline = "Join thousands who trust FinanceTracker to manage their financial journey. Sign up in seconds and start tracking today.",
   primaryCta = {
-    text: "Get Started for Free",
-    href: "/signup"
+    text: "Go to Dashboard",
+    href: "/dashboard"
   },
   secondaryCta = {
     text: "Already have an account?",

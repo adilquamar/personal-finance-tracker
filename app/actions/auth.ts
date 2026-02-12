@@ -217,9 +217,21 @@ export async function resetPassword(email: string, captchaToken?: string): Promi
 }
 
 /**
- * Gets the base URL for redirects using request headers.
+ * Gets the base URL for redirects.
+ * 
+ * Uses NEXT_PUBLIC_SITE_URL environment variable if set (recommended for production),
+ * otherwise falls back to detecting from request headers.
+ * 
+ * Set NEXT_PUBLIC_SITE_URL in your Vercel environment variables to your production URL
+ * (e.g., https://personal-finance-tracker-blue-phi.vercel.app).
  */
 async function getBaseUrl(): Promise<string> {
+  // Prefer explicit env var — most reliable for production deployments
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "") // strip trailing slash
+  }
+
+  // Fallback: detect from request headers (works on Vercel, but explicit is safer)
   const headersList = await headers()
   const host = headersList.get("host") || "localhost:3000"
   const protocol = headersList.get("x-forwarded-proto") || "http"

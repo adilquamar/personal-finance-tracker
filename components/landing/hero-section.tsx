@@ -34,8 +34,8 @@ export function HeroSection({
   ),
   subheadline = "Track expenses effortlessly, gain powerful insights with beautiful analytics, and let AI help you make smarter financial decisions.",
   primaryCta = {
-    text: "Start Free Trial",
-    href: "/signup"
+    text: "Get Started",
+    href: "/dashboard"
   },
   secondaryCta = {
     text: "See How It Works",
