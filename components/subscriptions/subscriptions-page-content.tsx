@@ -12,7 +12,6 @@ import type {
   SubscriptionWithStatus,
 } from "@/types/subscription"
 import { Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 interface SubscriptionsPageContentProps {
   data: SubscriptionsPageData
@@ -65,23 +64,6 @@ export function SubscriptionsPageContent({
       {/* Stats cards */}
       <SubscriptionStats stats={data.stats} />
 
-      {/* Add button */}
-      <div className="flex justify-end">
-        <Button
-          onClick={handleAddNew}
-          className={cn(
-            "h-10 rounded-lg text-sm font-medium",
-            "bg-indigo-500 text-white",
-            "hover:bg-indigo-600",
-            "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2",
-            "transition-colors"
-          )}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Subscription
-        </Button>
-      </div>
-
       {/* Tabs: Monthly / Yearly with Paid + Upcoming lists */}
       <SubscriptionTabs
         monthlyPaid={data.monthlyPaid}
@@ -92,6 +74,14 @@ export function SubscriptionsPageContent({
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+
+      {/* Add button */}
+      <div className="mt-6 flex justify-end">
+        <Button onClick={handleAddNew}>
+          <Plus size={16} className="mr-2" />
+          Add Subscription
+        </Button>
+      </div>
 
       {/* Add / Edit dialog */}
       <AddSubscriptionForm

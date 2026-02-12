@@ -12,7 +12,7 @@ import {
   updateSubscription,
   deleteSubscription,
 } from "@/app/actions/subscriptions"
-import { useFormAction } from "@/lib/hooks"
+import { useFormAction, useIsMobile } from "@/lib/hooks"
 import { formatUrlDate } from "@/lib/utils/date-range"
 import {
   dateFromDay,
@@ -27,6 +27,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet"
 import { Form } from "@/components/ui/form"
 import { TitleField } from "./title-field"
 import { AmountField } from "./amount-field"
@@ -75,7 +82,9 @@ interface AddSubscriptionFormProps {
 }
 
 /**
- * Dialog-based form for creating and editing subscriptions.
+ * Responsive form for creating and editing subscriptions.
+ * Renders as a bottom Sheet on mobile and a centered Dialog on desktop,
+ * matching the BudgetFormDialog pattern.
  * Uses RHF reset() to sync form values when the dialog opens.
  */
 export function AddSubscriptionForm({
@@ -83,6 +92,7 @@ export function AddSubscriptionForm({
   onOpenChange,
   subscription,
 }: AddSubscriptionFormProps) {
+  const isMobile = useIsMobile()
   const isEditing = !!subscription
 
   const form = useForm<SubscriptionFormData>({
@@ -151,72 +161,88 @@ export function AddSubscriptionForm({
     await executeDelete(subscription.id)
   }
 
+  const title = isEditing ? "Edit Subscription" : "Add Subscription"
+  const description = isEditing
+    ? "Update the details of your recurring expense."
+    : "Add a new recurring expense to track."
+
+  const formContent = (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-5"
+      >
+        <TitleField disabled={isLoading} />
+        <AmountField disabled={isLoading} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <CategoryField disabled={isLoading} />
+          <RecurrenceField disabled={isLoading} />
+        </div>
+
+        <BillingDateField disabled={isLoading} />
+
+        {/* Submit and Delete buttons */}
+        <div className="flex flex-col gap-3 pt-2">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className={cn(
+              "w-full h-12 rounded-lg text-base font-medium",
+              "bg-indigo-500 text-white",
+              "hover:bg-indigo-600",
+              "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "transition-colors"
+            )}
+          >
+            {isLoading
+              ? isEditing
+                ? "Updating..."
+                : "Adding..."
+              : isEditing
+                ? "Update Subscription"
+                : "Add Subscription"}
+          </Button>
+
+          {isEditing && (
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={isLoading}
+              onClick={handleDelete}
+              className="w-full h-10 text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              {isDeleting ? "Deleting..." : "Delete Subscription"}
+            </Button>
+          )}
+        </div>
+      </form>
+    </Form>
+  )
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8">
+          <SheetHeader className="text-left mb-5">
+            <SheetTitle>{title}</SheetTitle>
+            <SheetDescription>{description}</SheetDescription>
+          </SheetHeader>
+          {formContent}
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Subscription" : "Add Subscription"}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? "Update the details of your recurring expense."
-              : "Add a new recurring expense to track."}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-5"
-          >
-            <TitleField disabled={isLoading} />
-            <AmountField disabled={isLoading} />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <CategoryField disabled={isLoading} />
-              <RecurrenceField disabled={isLoading} />
-            </div>
-
-            <BillingDateField disabled={isLoading} />
-
-            {/* Submit and Delete buttons */}
-            <div className="flex flex-col gap-3 pt-2">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className={cn(
-                  "w-full h-12 rounded-lg text-base font-medium",
-                  "bg-indigo-500 text-white",
-                  "hover:bg-indigo-600",
-                  "focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2",
-                  "disabled:opacity-50 disabled:cursor-not-allowed",
-                  "transition-colors"
-                )}
-              >
-                {isLoading
-                  ? isEditing
-                    ? "Updating..."
-                    : "Adding..."
-                  : isEditing
-                    ? "Update Subscription"
-                    : "Add Subscription"}
-              </Button>
-
-              {isEditing && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={isLoading}
-                  onClick={handleDelete}
-                  className="w-full h-10 text-red-600 hover:text-red-700 hover:bg-red-50"
-                >
-                  {isDeleting ? "Deleting..." : "Delete Subscription"}
-                </Button>
-              )}
-            </div>
-          </form>
-        </Form>
+        {formContent}
       </DialogContent>
     </Dialog>
   )
