@@ -16,6 +16,10 @@ const envSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url("NEXT_PUBLIC_SITE_URL must be a valid URL").optional(),
   /** Secret token for authenticating Vercel Cron requests - optional, only set in production */
   CRON_SECRET: z.string().optional(),
+  /** OpenAI API key for AI chatbot */
+  OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
+  /** AI model override (e.g. "openai:gpt-4o" or "anthropic:claude-3-haiku") */
+  AI_MODEL: z.string().optional(),
 })
 
 /**
@@ -45,6 +49,8 @@ function getEnv(): Env {
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       CRON_SECRET: process.env.CRON_SECRET,
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+      AI_MODEL: process.env.AI_MODEL,
     })
   }
   return _env

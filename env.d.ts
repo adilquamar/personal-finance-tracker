@@ -14,7 +14,14 @@ declare namespace NodeJS {
      * @see https://supabase.com/docs/guides/api/api-keys
      */
     SUPABASE_SECRET_KEY: string
+    /** OpenAI API key for AI chatbot */
     OPENAI_API_KEY: string
+    /** AI model override (e.g. "openai:gpt-4o" or "anthropic:claude-3-haiku") */
+    AI_MODEL?: string
+    /** Anthropic API key (optional, for Claude models) */
+    ANTHROPIC_API_KEY?: string
+    /** Google Generative AI API key (optional, for Gemini models) */
+    GOOGLE_GENERATIVE_AI_API_KEY?: string
     /**
      * Cloudflare Turnstile Site Key for CAPTCHA protection
      * Safe to expose in client-side code
