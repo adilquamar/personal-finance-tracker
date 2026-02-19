@@ -1,6 +1,7 @@
 import { tool } from "ai"
 import { z } from "zod"
 import type { ToolContext } from "./types"
+import type { ExpenseCategory } from "@/types/expense"
 
 export function createGetExpensesByDateRange({ supabase, userId }: ToolContext) {
   return tool({
@@ -24,7 +25,7 @@ export function createGetExpensesByDateRange({ supabase, userId }: ToolContext) 
         .order("date", { ascending: false })
 
       if (category) {
-        query = query.eq("category", category)
+        query = query.eq("category", category as ExpenseCategory)
       }
 
       const { data, error } = await query

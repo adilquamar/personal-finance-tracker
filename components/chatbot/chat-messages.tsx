@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import { MessageBubble } from "./message-bubble"
 import { SuggestedPrompts } from "./suggested-prompts"
-import type { Message } from "ai"
+import type { Message } from "@ai-sdk/react"
 
 interface ChatMessagesProps {
   messages: Message[]

@@ -214,7 +214,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_daily_message_count: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
     }
     Enums: {
       expense_category: ExpenseCategory

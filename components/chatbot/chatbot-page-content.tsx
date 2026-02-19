@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { useChat } from "ai/react"
+import { useChat } from "@ai-sdk/react"
 import { Menu } from "lucide-react"
 import { ConversationSidebar } from "./conversation-sidebar"
 import { ChatMessages } from "./chat-messages"
@@ -80,8 +80,9 @@ export function ChatbotPageContent({
   const handleNewChat = useCallback(async () => {
     const result = await createConversation()
     if (result.success && result.data) {
-      setConversations((prev) => [result.data, ...prev])
-      setActiveConversationId(result.data.id)
+      const newConversation = result.data
+      setConversations((prev) => [newConversation, ...prev])
+      setActiveConversationId(newConversation.id)
       setMessages([])
       setSidebarOpen(false)
     }
@@ -106,8 +107,9 @@ export function ChatbotPageContent({
       if (!activeConversationId) {
         const result = await createConversation()
         if (result.success && result.data) {
-          setConversations((prev) => [result.data, ...prev])
-          setActiveConversationId(result.data.id)
+          const newConversation = result.data
+          setConversations((prev) => [newConversation, ...prev])
+          setActiveConversationId(newConversation.id)
           setInput(prompt)
         }
       } else {
@@ -125,8 +127,9 @@ export function ChatbotPageContent({
       if (!activeConversationId) {
         const result = await createConversation()
         if (result.success && result.data) {
-          setConversations((prev) => [result.data, ...prev])
-          setActiveConversationId(result.data.id)
+          const newConversation = result.data
+          setConversations((prev) => [newConversation, ...prev])
+          setActiveConversationId(newConversation.id)
           setTimeout(() => {
             handleSubmit(e)
           }, 0)
