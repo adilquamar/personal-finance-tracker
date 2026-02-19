@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai"
 import { anthropic } from "@ai-sdk/anthropic"
 import { google } from "@ai-sdk/google"
+import { AI_CONSTANTS } from "./ai-constants"
 
 /**
  * Admin-controlled AI model configuration.
@@ -13,7 +14,7 @@ const AI_DEFAULTS = {
   model: "gpt-4o-mini",
   maxTokens: 2048,
   temperature: 0.7,
-  dailyMessageLimit: 50,
+  dailyMessageLimit: AI_CONSTANTS.dailyMessageLimit,
 }
 
 const providers = {
